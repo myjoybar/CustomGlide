@@ -1,8 +1,11 @@
 package com.joy.glide.library;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import com.joy.glide.library.request.RequestManager;
+import com.joy.glide.library.request.RequestManagerRetriever;
 
 /**
  * Created by joybar on 2018/5/8.
@@ -10,11 +13,16 @@ import com.joy.glide.library.request.RequestManager;
 
 public class Glide {
 
-	public static RequestManager with(FragmentActivity activity) {
-//		RequestManager requestManager = RequestManagerRetriever.get();
-//		return retriever.get(activity);
+    public static RequestManager with(Context context) {
+        return RequestManagerRetriever.get(context);
+    }
 
-		return  new RequestManager();
-	}
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static RequestManager with(android.app.Fragment fragment) {
+        return RequestManagerRetriever.get(fragment);
+    }
 
+    public static RequestManager with(android.support.v4.app.Fragment fragment) {
+        return RequestManagerRetriever.get(fragment);
+    }
 }

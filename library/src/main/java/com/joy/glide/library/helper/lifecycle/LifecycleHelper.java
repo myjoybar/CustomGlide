@@ -1,4 +1,4 @@
-package com.joy.glide.library.lifecycle;
+package com.joy.glide.library.helper.lifecycle;
 
 import android.content.Context;
 import android.os.Build;

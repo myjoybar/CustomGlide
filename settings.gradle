@@ -1,1 +1,1 @@
-include ':app', ':library', ':libasync'
+include ':app', ':library'
