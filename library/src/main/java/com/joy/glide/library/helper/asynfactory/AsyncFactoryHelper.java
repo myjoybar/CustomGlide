@@ -4,7 +4,6 @@ package com.joy.glide.library.helper.asynfactory;
 import com.joy.glide.library.http.HttpFactorySelector;
 import com.joy.glide.library.request.RequestOrder;
 
-import me.joy.async.lib.factory.AsyncFactory;
 import me.joy.async.lib.task.AsynchronousTask;
 
 /**
@@ -28,11 +27,11 @@ public class AsyncFactoryHelper<TResult> {
 
 
     public void produce(RequestOrder taskOrder, Callback callback) {
-        AsynchronousTask asynchronousTask = createTaskRunnable(taskOrder, callback);
-        AsyncFactory.getInstance().produce(asynchronousTask);
+        AsynchronousTask asynchronousTask = createAsynchronousTask(taskOrder, callback);
+        asynchronousTask.execute();
     }
 
-    private AsynchronousTask createTaskRunnable(final RequestOrder taskOrder, final
+    private AsynchronousTask createAsynchronousTask(final RequestOrder taskOrder, final
     Callback<TResult> callback) {
         AsynchronousTask asynchronousTask = new AsynchronousTask<Integer, TResult>() {
 
