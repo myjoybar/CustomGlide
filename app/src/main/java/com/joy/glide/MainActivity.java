@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		initView();
 		load();
-		testString();
-		testJson();
+		//testString();
+		//testJson();
 
 	}
 
@@ -105,5 +105,8 @@ public class MainActivity extends AppCompatActivity {
 		mQueue.add(jsonObjectRequest);
 	}
 
+	private void test(){
+
+	}
 
 }

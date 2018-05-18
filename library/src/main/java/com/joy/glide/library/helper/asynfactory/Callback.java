@@ -1,16 +1,17 @@
 package com.joy.glide.library.helper.asynfactory;
 
 
-import me.joy.async.lib.task.AsynchronousTask;
+import com.joy.glide.library.request.RequestOrder;
+import com.joy.smoothhttp.call.ICall;
 
 /**
  * Created by joybar on 2018/5/9.
  */
 
 public interface Callback<TResult> {
-    void onPreExecute(AsynchronousTask asynchronousTask);
+	void onPreExecute(ICall iCall);
 
-    void onFailure();
+	void onFailure(RequestOrder requestOrder, Throwable throwable);
 
-    void onResponse(TResult result);
+	void onResponse(RequestOrder requestOrder, TResult result);
 }

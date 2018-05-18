@@ -1,74 +1,51 @@
 package com.joy.glide.library.helper.asynfactory;
 
 
-import com.joy.glide.library.http.HttpFactorySelector;
-import com.joy.glide.library.request.RequestOrder;
+import android.graphics.Bitmap;
 
-import me.joy.async.lib.task.AsynchronousTask;
+import com.joy.glide.library.request.RequestOrder;
+import com.joy.smoothhttp.SmoothHttpClient;
+import com.joy.smoothhttp.call.ICall;
+import com.joy.smoothhttp.convert.BitmapConverter;
+import com.joy.smoothhttp.request.Request;
 
 /**
  * Created by joybar on 2018/5/11.
  */
 
 public class AsyncFactoryHelper<TResult> {
-    public static String TAG = "AsyncFactoryHelper";
 
-    public AsyncFactoryHelper() {
+	public AsyncFactoryHelper() {
 
-    }
+	}
+	public static AsyncFactoryHelper getInstance() {
+		return FactoryManagerHolder.INSTANCE;
+	}
 
-    public static AsyncFactoryHelper getInstance() {
-        return FactoryManagerHolder.INSTANCE;
-    }
-
-    private static class FactoryManagerHolder {
-        private static AsyncFactoryHelper INSTANCE = new AsyncFactoryHelper();
-    }
+	private static class FactoryManagerHolder {
+		private static AsyncFactoryHelper INSTANCE = new AsyncFactoryHelper();
+	}
 
 
-    public void produce(RequestOrder taskOrder, Callback callback) {
-        AsynchronousTask asynchronousTask = createAsynchronousTask(taskOrder, callback);
-        asynchronousTask.execute();
-    }
+	public void produce(final RequestOrder taskOrder, final Callback callback) {
 
-    private AsynchronousTask createAsynchronousTask(final RequestOrder taskOrder, final
-    Callback<TResult> callback) {
-        AsynchronousTask asynchronousTask = new AsynchronousTask<Integer, TResult>() {
+		SmoothHttpClient smoothHttpClient = new SmoothHttpClient();
+		final Request request = new Request.Builder().setHttpUrl(taskOrder.getUrl()).build();
+		ICall<Bitmap> call = smoothHttpClient.newCall(request, new BitmapConverter());
+		callback.onPreExecute(call);
+		call.submit(new com.joy.smoothhttp.call.Callback<Bitmap>() {
+			@Override
+			public void onFailure(ICall call, Throwable throwable) {
+				callback.onFailure(taskOrder, throwable);
+			}
 
-            @Override
-            public void onPreExecute() {
-                super.onPreExecute();
-                if (null != callback) {
-                    callback.onPreExecute(this);
-                }
-            }
+			@Override
+			public void onResponse(ICall call, Bitmap bitmap) {
+				callback.onResponse(taskOrder, bitmap);
 
-            @Override
-            protected TResult doInBackground() {
-                TResult result = (TResult) HttpFactorySelector.getInstance().get(new RequestOrder
-                        (taskOrder.getUrl())).execute();
-                return result;
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                super.onProgressUpdate(values);
-            }
-
-            @Override
-            protected void onPostExecute(TResult result) {
-                super.onPostExecute(result);
-                if (null != callback) {
-                    if (null != result) {
-                        callback.onResponse(result);
-                    } else {
-                        callback.onFailure();
-                    }
-                }
-            }
-        };
-        return asynchronousTask;
-    }
+			}
+		});
+	}
 
 
 }
