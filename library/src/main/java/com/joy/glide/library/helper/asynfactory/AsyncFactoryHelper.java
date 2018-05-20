@@ -33,7 +33,7 @@ public class AsyncFactoryHelper<TResult> {
 		final Request request = new Request.Builder().setHttpUrl(taskOrder.getUrl()).build();
 		ICall<Bitmap> call = smoothHttpClient.newCall(request, new BitmapConverter());
 		callback.onPreExecute(call);
-		call.submit(new com.joy.smoothhttp.call.Callback<Bitmap>() {
+		call.submit(new com.joy.smoothhttp.call.AbCallback<Bitmap>() {
 			@Override
 			public void onFailure(ICall call, Throwable throwable) {
 				callback.onFailure(taskOrder, throwable);
@@ -43,6 +43,12 @@ public class AsyncFactoryHelper<TResult> {
 			public void onResponse(ICall call, Bitmap bitmap) {
 				callback.onResponse(taskOrder, bitmap);
 
+			}
+
+			@Override
+			public void onProgressUpdate(ICall call, int values) {
+				super.onProgressUpdate(call, values);
+				callback.onProgressUpdate(taskOrder,values);
 			}
 		});
 	}

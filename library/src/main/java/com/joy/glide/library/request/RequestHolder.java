@@ -7,7 +7,6 @@ import com.joy.glide.library.helper.asynfactory.AsyncFactoryHelper;
 import com.joy.glide.library.helper.asynfactory.Callback;
 import com.joy.glide.library.utils.GLog;
 import com.joy.smoothhttp.call.ICall;
-import com.lifecycle.joybar.lifecyclelistener.interfaces.LifecycleListener;
 
 /**
  * Created by joybar on 2018/5/9.
@@ -45,6 +44,11 @@ public class RequestHolder {
 			public void onResponse(RequestOrder requestOrder, Bitmap bitmap) {
 				GLog.print("onResponse=" + requestOrder.getUrl());
 				imageView.setImageBitmap(bitmap);
+			}
+
+			@Override
+			public void onProgressUpdate(RequestOrder requestOrder, int values) {
+				GLog.print("onProgressUpdate,values=" + values);
 			}
 
 
