@@ -16,4 +16,6 @@ public interface Callback<TResult> {
 	void onResponse(RequestOrder requestOrder, TResult result);
 
 	void onProgressUpdate(RequestOrder requestOrder, int value);
+
+	void onFinish(RequestOrder requestOrder);
 }

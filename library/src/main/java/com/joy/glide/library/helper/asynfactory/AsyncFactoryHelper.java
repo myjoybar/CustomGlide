@@ -1,13 +1,12 @@
 package com.joy.glide.library.helper.asynfactory;
 
 
-import android.graphics.Bitmap;
-
 import com.joy.glide.library.request.RequestOrder;
 import com.joy.smoothhttp.SmoothHttpClient;
 import com.joy.smoothhttp.call.ICall;
-import com.joy.smoothhttp.convert.BitmapConverter;
+import com.joy.smoothhttp.convert.ResponseConverter;
 import com.joy.smoothhttp.request.Request;
+import com.joy.smoothhttp.response.Response;
 
 /**
  * Created by joybar on 2018/5/11.
@@ -30,18 +29,20 @@ public class AsyncFactoryHelper<TResult> {
 	public void produce(final RequestOrder taskOrder, final Callback callback) {
 
 		SmoothHttpClient smoothHttpClient = new SmoothHttpClient();
-		final Request request = new Request.Builder().setHttpUrl(taskOrder.getUrl()).build();
-		ICall<Bitmap> call = smoothHttpClient.newCall(request, new BitmapConverter());
+		final Request request = new Request.Builder().setHttpUrl(taskOrder.getUrl()).setTimeOut(60*1000).build();
+		ICall<Response> call = smoothHttpClient.newCall(request, new ResponseConverter());
 		callback.onPreExecute(call);
-		call.submit(new com.joy.smoothhttp.call.AbCallback<Bitmap>() {
+		call.submit(new com.joy.smoothhttp.call.AbCallback<Response>() {
 			@Override
 			public void onFailure(ICall call, Throwable throwable) {
 				callback.onFailure(taskOrder, throwable);
+				callback.onFinish(taskOrder);
 			}
 
 			@Override
-			public void onResponse(ICall call, Bitmap bitmap) {
-				callback.onResponse(taskOrder, bitmap);
+			public void onResponse(ICall call, Response response) {
+				callback.onResponse(taskOrder, response);
+				callback.onFinish(taskOrder);
 
 			}
 

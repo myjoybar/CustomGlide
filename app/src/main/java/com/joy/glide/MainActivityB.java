@@ -1,5 +1,7 @@
 package com.joy.glide;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityB extends AppCompatActivity {
 
 	public static String TAG = "MainActivity";
 	ImageView imv1;
@@ -39,12 +41,17 @@ public class MainActivity extends AppCompatActivity {
 		setClickListener();
 
 	}
-	private void setClickListener(){
+
+	public static void launch(Context context) {
+		Intent intent = new Intent(context, MainActivityB.class);
+		context.startActivity(intent);
+	}
+
+	private void setClickListener() {
 		findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				load();
-				//MainActivityB.launch(MainActivity.this);
 			}
 		});
 	}
@@ -57,12 +64,9 @@ public class MainActivity extends AppCompatActivity {
 		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
 		String url2 = "\t\thttps://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
 				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg\n";
+		String url3 = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527755692&di=92a1fa763f1ad16fab7519b63585f4a1&imgtype=jpg&er=1&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2Fe%2F57ea2e81b367d.jpg";
 
-		String urlGig = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
-		String urlBig  = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
-
-		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(urlBig).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
+		Glide.with(this).load(url3).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressUpdate(int value) {
-				GLog.printInfo("onProgressUpdate, value"+value);
+			//	GLog.printInfo("onProgressUpdate, value" + value);
 			}
 
 			@Override
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onException(Throwable throwable) {
-				GLog.printInfo("onException, "+throwable.getMessage());
+				GLog.printInfo("onException, " + throwable.getMessage());
 			}
 
 			@Override
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		StringRequest stringRequest1 = new StringRequest(Request.Method.POST, url1,  new Response.Listener<String>() {
+		StringRequest stringRequest1 = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
 			@Override
 			public void onResponse(String response) {
 				Log.d(TAG, response);
@@ -134,13 +138,12 @@ public class MainActivity extends AppCompatActivity {
 	private void testJson() {
 		String url1 = "https://www.baidu.com";
 		String url2 = "http://www.weather.com.cn/data/cityinfo/101010100.html";
-		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url2, null,
-				new Response.Listener<JSONObject>() {
-					@Override
-					public void onResponse(JSONObject response) {
-						Log.d(TAG, response.toString());
-					}
-				}, new Response.ErrorListener() {
+		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url2, null, new Response.Listener<JSONObject>() {
+			@Override
+			public void onResponse(JSONObject response) {
+				Log.d(TAG, response.toString());
+			}
+		}, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				Log.e(TAG, error.getMessage(), error);
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 		mQueue.add(jsonObjectRequest);
 	}
 
-	private void test(){
+	private void test() {
 
 	}
 
