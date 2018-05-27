@@ -20,13 +20,11 @@ public class RequestManager {
 	}
 
 	public DrawableRequest<String> load(String string) {
-		drawableRequestBuilder = new DrawableRequest(string);
-		return drawableRequestBuilder;
+		return drawableRequestBuilder = new DrawableRequest<String>(String.class,string);
 	}
 
 	public DrawableRequest<File> load(File file) {
-		//return (DrawableTypeRequest<File>) fromFile().load(file);
-		return null;
+		return drawableRequestBuilder = new DrawableRequest<File>(File.class,file);
 	}
 
 }

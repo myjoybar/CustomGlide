@@ -21,6 +21,7 @@ import com.joy.glide.library.utils.GLog;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,16 +54,27 @@ public class MainActivity extends AppCompatActivity {
 		imv1 = this.findViewById(R.id.imv1);
 	}
 
+	private void test2(){
+		File file = new File(getExternalCacheDir() + "/image.jpg");
+		//Glide.with(this).load(file).into(imageView);
+	}
+
+
 	private void load() {
 		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
 		String url2 = "\t\thttps://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
 				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg\n";
 
 		String urlGig = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
+
+		File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
+
+		GLog.printInfo("file="+file.getName());
+		GLog.printInfo("file="+file.getAbsolutePath());
 		String urlBig  = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(urlBig).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
+		Glide.with(this).load(urlGig).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");

@@ -33,7 +33,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.joybar.lifecycle:lifecyclelistener:1.0.3'
     compile group: 'com.mcxiaoke.volley', name: 'library', version: '1.0.19'
-    compile 'com.joybar.smoothhttp:library:1.0.9'
+    compile 'com.joybar.smoothhttp:library:1.1.1'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.12'
 }
 

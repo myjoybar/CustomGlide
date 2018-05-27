@@ -11,8 +11,8 @@ import com.joy.glide.library.request.target.RequestListener;
 public class DrawableRequest<ModelType> extends DrawableRequestBuilder<ModelType> {
 
 
-	public DrawableRequest(String url) {
-		super(url);
+	public DrawableRequest(Class<ModelType> modelClass, ModelType model) {
+		super(modelClass, model);
 	}
 
 	@Override
@@ -36,7 +36,6 @@ public class DrawableRequest<ModelType> extends DrawableRequestBuilder<ModelType
 		super.listener(requestListener);
 		return this;
 	}
-
 
 
 }

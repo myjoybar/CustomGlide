@@ -4,21 +4,20 @@ package com.joy.glide.library.request;
  * Created by joybar on 11/05/2018.
  */
 
-public class RequestOrder {
-    private String url;
+public class RequestOrder<ModelType> {
+    private ModelType url;
 
-    public RequestOrder() {
-    }
-
-    public RequestOrder(String url) {
+    public RequestOrder( ModelType url) {
         this.url = url;
     }
 
-    public String getUrl() {
+    public ModelType getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(ModelType url) {
         this.url = url;
     }
+
+
 }

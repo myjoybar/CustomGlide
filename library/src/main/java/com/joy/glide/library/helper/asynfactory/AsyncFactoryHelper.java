@@ -29,7 +29,7 @@ public class AsyncFactoryHelper<TResult> {
 	public void produce(final RequestOrder taskOrder, final Callback callback) {
 
 		SmoothHttpClient smoothHttpClient = new SmoothHttpClient();
-		final Request request = new Request.Builder().setHttpUrl(taskOrder.getUrl()).setTimeOut(60*1000).build();
+		final Request request = new Request.Builder().setHttpUrl((String) taskOrder.getUrl()).setTimeOut(60*1000).build();
 		ICall<Response> call = smoothHttpClient.newCall(request, new ResponseConverter());
 		callback.onPreExecute(call);
 		call.submit(new com.joy.smoothhttp.call.AbCallback<Response>() {

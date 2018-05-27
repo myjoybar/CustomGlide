@@ -8,8 +8,9 @@ import com.joy.glide.library.load.engine.DiskCacheStrategy;
 
 public class DrawableRequestBuilder<ModelType> extends GenericRequestBuilder<ModelType> {
 
-	public DrawableRequestBuilder(String url) {
-		super(url);
+
+	public DrawableRequestBuilder(Class<ModelType> modelClass,ModelType model) {
+		super(modelClass, model);
 	}
 
 	public DrawableRequestBuilder<ModelType> load(ModelType model) {
