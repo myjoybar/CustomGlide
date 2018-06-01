@@ -17,20 +17,20 @@ import com.lifecycle.joybar.lifecyclelistener.interfaces.LifecycleListener;
 public class RequestManagerRetriever {
 
 	public static RequestManager get(Context context) {
-		final RequestManager requestManager = new RequestManager();
+		final RequestManager requestManager = new RequestManager(context);
 		createLifeMonitor(context, requestManager);
 		return requestManager;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public static RequestManager get(android.app.Fragment fragment) {
-		final RequestManager requestManager = new RequestManager();
+		final RequestManager requestManager = new RequestManager(fragment.getContext());
 		createLifeMonitor(fragment, requestManager);
 		return requestManager;
 	}
 
 	public static RequestManager get(android.support.v4.app.Fragment fragment) {
-		final RequestManager requestManager = new RequestManager();
+		final RequestManager requestManager = new RequestManager(fragment.getContext());
 		createLifeMonitor(fragment, requestManager);
 		return requestManager;
 	}
@@ -61,7 +61,7 @@ public class RequestManagerRetriever {
 			@Override
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
-				if (null != drawableRequestBuilder && !drawableRequestBuilder.isLoadReady()) {
+				if (null != drawableRequestBuilder   ) {
 					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
 					if (null != requestListener) {
@@ -102,7 +102,7 @@ public class RequestManagerRetriever {
 			@Override
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
-				if (null != drawableRequestBuilder && !drawableRequestBuilder.isLoadReady()) {
+				if (null != drawableRequestBuilder   ) {
 					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
 					if (null != requestListener) {
@@ -141,7 +141,7 @@ public class RequestManagerRetriever {
 			@Override
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
-				if (null != drawableRequestBuilder && !drawableRequestBuilder.isLoadReady()) {
+				if (null != drawableRequestBuilder   ) {
 					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
 					if (null != requestListener) {

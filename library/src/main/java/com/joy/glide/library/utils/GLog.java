@@ -19,9 +19,19 @@ public class GLog {
 			Log.d(TAG, msg);
 		}
 	}
+
 	public static void printError(String msg) {
 		if (enable) {
 			Log.e(TAG, msg);
+		}
+	}
+
+	public static void printWarning(String message, Object... args) {
+		if (enable) {
+			if (args.length > 0) {
+				message = String.format(message, args);
+			}
+			Log.e(TAG, message);
 		}
 	}
 }

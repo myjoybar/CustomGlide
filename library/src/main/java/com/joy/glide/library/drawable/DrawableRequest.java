@@ -1,5 +1,6 @@
 package com.joy.glide.library.drawable;
 
+import android.content.Context;
 import android.widget.ImageView;
 
 import com.joy.glide.library.request.target.RequestListener;
@@ -11,8 +12,8 @@ import com.joy.glide.library.request.target.RequestListener;
 public class DrawableRequest<ModelType> extends DrawableRequestBuilder<ModelType> {
 
 
-	public DrawableRequest(Class<ModelType> modelClass, ModelType model) {
-		super(modelClass, model);
+	public DrawableRequest(Context context, Class<ModelType> modelClass, ModelType url) {
+		super(context, modelClass, url);
 	}
 
 	@Override

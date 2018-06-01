@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
+import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.request.target.RequestListener;
 import com.joy.glide.library.utils.GLog;
 
@@ -65,16 +66,22 @@ public class MainActivity extends AppCompatActivity {
 		String url2 = "\t\thttps://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
 				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg\n";
 
-		String urlGig = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
+		String urlGif = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
 
 		File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
+		File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
 
-		GLog.printInfo("file="+file.getName());
-		GLog.printInfo("file="+file.getAbsolutePath());
+		//GLog.printInfo("file="+file.getName());
+		GLog.printInfo("file="+file2.getAbsolutePath());
 		String urlBig  = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(urlGig).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
+		Glide.with(this)
+				.load(url)
+				.placeholder(R.drawable.placeholder)
+				.error(R.drawable.error)
+				.cacheStrategySwitcher(new LocalDataSource.CacheStrategySwitcher(true,true))
+				.listener(new RequestListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
@@ -82,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressUpdate(int value) {
-				GLog.printInfo("onProgressUpdate, value"+value);
+				//GLog.printInfo("onProgressUpdate, value"+value);
 			}
 
 			@Override
