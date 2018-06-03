@@ -49,6 +49,11 @@ class OriginalKey implements Key {
     }
 
     @Override
+    public Key getOriginalKey() {
+        return null;
+    }
+
+    @Override
     public void updateDiskCacheKey(MessageDigest messageDigest) throws UnsupportedEncodingException {
         messageDigest.update(id.getBytes(STRING_CHARSET_NAME));
         signature.updateDiskCacheKey(messageDigest);

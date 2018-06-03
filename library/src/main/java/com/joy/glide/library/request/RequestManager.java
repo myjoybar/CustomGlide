@@ -31,4 +31,12 @@ public class RequestManager {
 		return drawableRequestBuilder = new DrawableRequest<File>(context, File.class, file);
 	}
 
+	public <T> DrawableRequest<T> load(T model) {
+		return drawableRequestBuilder = new DrawableRequest<T>(context, getSafeClass(model), model);
+	}
+
+	private static <T> Class<T> getSafeClass(T model) {
+		return model != null ? (Class<T>) model.getClass() : null;
+	}
+
 }

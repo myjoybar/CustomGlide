@@ -2,7 +2,7 @@ package com.joy.glide.library.cache.memory;
 
 import android.graphics.Bitmap;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 
 import java.lang.ref.Reference;
 import java.util.Collection;
@@ -17,10 +17,10 @@ import java.util.Map;
 
 public abstract class BaseMemoryCache implements MemoryCache {
 
-	private final Map<DrawableKey, Reference<Bitmap>> softMap = Collections.synchronizedMap(new HashMap<DrawableKey, Reference<Bitmap>>());
+	private final Map<Key, Reference<Bitmap>> softMap = Collections.synchronizedMap(new HashMap<Key, Reference<Bitmap>>());
 
 	@Override
-	public Bitmap get(DrawableKey key) {
+	public Bitmap get(Key key) {
 		Bitmap result = null;
 		Reference<Bitmap> reference = softMap.get(key);
 		if (reference != null) {
@@ -30,21 +30,21 @@ public abstract class BaseMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public boolean put(DrawableKey key, Bitmap value) {
+	public boolean put(Key key, Bitmap value) {
 		softMap.put(key, createReference(value));
 		return true;
 	}
 
 	@Override
-	public Bitmap remove(DrawableKey key) {
+	public Bitmap remove(Key key) {
 		Reference<Bitmap> bmpRef = softMap.remove(key);
 		return bmpRef == null ? null : bmpRef.get();
 	}
 
 	@Override
-	public Collection<DrawableKey> keys() {
+	public Collection<Key> keys() {
 		synchronized (softMap) {
-			return new HashSet<DrawableKey>(softMap.keySet());
+			return new HashSet<Key>(softMap.keySet());
 		}
 	}
 

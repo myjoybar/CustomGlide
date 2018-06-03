@@ -17,6 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
 import com.joy.glide.library.data.source.local.LocalDataSource;
+import com.joy.glide.library.request.RequestOrder;
 import com.joy.glide.library.request.target.RequestListener;
 import com.joy.glide.library.utils.GLog;
 
@@ -77,10 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
 		Glide.with(this)
-				.load(url)
+				//.load(url)
+				.load(new MyUrl(url))
 				.placeholder(R.drawable.placeholder)
 				.error(R.drawable.error)
-				.cacheStrategySwitcher(new LocalDataSource.CacheStrategySwitcher(true,true))
+				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(false,60))
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
 				.listener(new RequestListener() {
 			@Override
 			public void onLoadStarted() {
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressUpdate(int value) {
-				//GLog.printInfo("onProgressUpdate, value"+value);
+				GLog.printInfo("onProgressUpdate, value"+value);
 			}
 
 			@Override
@@ -110,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
+	public class MyUrl extends RequestOrder<String> {
+
+
+		public MyUrl(String url) {
+			super(url);
+		}
+
+		@Override
+		public String getUrl() {
+			return "aaaa";
+		}
+	}
 
 	private void testString() {
 		RequestQueue mQueue = Volley.newRequestQueue(this);

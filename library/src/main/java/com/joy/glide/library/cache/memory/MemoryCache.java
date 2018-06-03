@@ -2,7 +2,7 @@ package com.joy.glide.library.cache.memory;
 
 import android.graphics.Bitmap;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 
 import java.util.Collection;
 
@@ -12,13 +12,13 @@ import java.util.Collection;
 
 public interface MemoryCache {
 
-	boolean put(DrawableKey key, Bitmap value);
+	boolean put(Key key, Bitmap value);
 
-	Bitmap get(DrawableKey key);
+	Bitmap get(Key key);
 
-	Bitmap remove(DrawableKey key);
+	Bitmap remove(Key key);
 
-	Collection<DrawableKey> keys();
+	Collection<Key> keys();
 
 	void clear();
 }

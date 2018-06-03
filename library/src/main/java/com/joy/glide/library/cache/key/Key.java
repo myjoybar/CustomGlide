@@ -17,4 +17,7 @@ public interface Key {
 
     @Override
     int hashCode();
+
+    public Key getOriginalKey();
+
 }

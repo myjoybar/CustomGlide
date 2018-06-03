@@ -1,6 +1,6 @@
 package com.joy.glide.library.cache.disk.naming;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 import com.joy.glide.library.utils.GLog;
 
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ public class Md5FileNameGenerator implements FileNameGenerator {
 	private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
 	@Override
-	public String generate(DrawableKey key) {
+	public String generate(Key key) {
 		byte[] md5 = getMD5(key.toString().getBytes());
 		BigInteger bi = new BigInteger(md5).abs();
 		return bi.toString(RADIX);

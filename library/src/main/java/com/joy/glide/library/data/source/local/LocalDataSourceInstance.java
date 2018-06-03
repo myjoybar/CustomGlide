@@ -22,9 +22,7 @@ public class LocalDataSourceInstance {
 		localDataSource = new LocalDataSource(context);
 	}
 
-	public void setCacheStrategy(LocalDataSource.CacheStrategySwitcher cacheStrategy) {
-		localDataSource.setCacheStrategy(cacheStrategy);
-	}
+
 
 	public LocalDataSource getLocalDataSource() {
 		return localDataSource;

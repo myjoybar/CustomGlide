@@ -3,7 +3,7 @@ package com.joy.glide.library.cache.disk;
 import android.graphics.Bitmap;
 
 import com.joy.glide.library.cache.disk.naming.FileNameGenerator;
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 import com.joy.glide.library.cache.utils.FileUtil;
 import com.joy.glide.library.cache.utils.IoUtils;
 
@@ -45,12 +45,12 @@ public class LocalDiskCache implements DiskCache {
 	}
 
 	@Override
-	public File get(DrawableKey key) {
+	public File get(Key key) {
 		return getFile(key);
 	}
 
 	@Override
-	public boolean save(DrawableKey key, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
+	public boolean save(Key key, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
 		File imageFile = getFile(key);
 		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
 		boolean loaded = false;
@@ -73,7 +73,7 @@ public class LocalDiskCache implements DiskCache {
 	}
 
 	@Override
-	public boolean save(DrawableKey key, Bitmap bitmap) throws IOException {
+	public boolean save(Key key, Bitmap bitmap) throws IOException {
 		File imageFile = getFile(key);
 		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(tmpFile), DEFAULT_BUFFER_SIZE);
@@ -94,7 +94,7 @@ public class LocalDiskCache implements DiskCache {
 	}
 
 	@Override
-	public boolean remove(DrawableKey key) {
+	public boolean remove(Key key) {
 		return getFile(key).delete();
 	}
 
@@ -114,7 +114,7 @@ public class LocalDiskCache implements DiskCache {
 	}
 
 
-	protected File getFile(DrawableKey key) {
+	protected File getFile(Key key) {
 		String fileName = fileNameGenerator.generate(key);
 		File dir = cacheDir;
 		if (!cacheDir.exists() && !cacheDir.mkdirs()) {

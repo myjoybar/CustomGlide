@@ -5,7 +5,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.LruCache;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 
 import java.util.Collection;
 
@@ -15,8 +15,9 @@ import java.util.Collection;
 
 public class MemoryLruCache implements MemoryCache {
 
-	private static LruCache<DrawableKey, Bitmap> mMemoryCache;
+	private static LruCache<Key, Bitmap> mMemoryCache;
 
+	private int availableMemoryPercent;
 	public MemoryLruCache() {
 		this(50);
 	}
@@ -27,16 +28,16 @@ public class MemoryLruCache implements MemoryCache {
 		}
 		int maxMemory = (int) Runtime.getRuntime().maxMemory();
 		int cacheSize = maxMemory *availableMemoryPercent/ 100;
-		mMemoryCache = new LruCache<DrawableKey, Bitmap>(cacheSize) {
+		mMemoryCache = new LruCache<Key, Bitmap>(cacheSize) {
 			@Override
-			protected int sizeOf(DrawableKey key, Bitmap bitmap) {
+			protected int sizeOf(Key key, Bitmap bitmap) {
 				return bitmap.getByteCount();
 			}
 		};
 	}
 
 	@Override
-	public boolean put(DrawableKey key, Bitmap value) {
+	public boolean put(Key key, Bitmap value) {
 		if (get(key) == null) {
 			mMemoryCache.put(key, value);
 			return true;
@@ -46,17 +47,17 @@ public class MemoryLruCache implements MemoryCache {
 	}
 
 	@Override
-	public Bitmap get(DrawableKey key) {
+	public Bitmap get(Key key) {
 		return mMemoryCache.get(key);
 	}
 
 	@Override
-	public Bitmap remove(DrawableKey key) {
+	public Bitmap remove(Key key) {
 		return mMemoryCache.remove(key);
 	}
 
 	@Override
-	public Collection<DrawableKey> keys() {
+	public Collection<Key> keys() {
 		return null;
 	}
 

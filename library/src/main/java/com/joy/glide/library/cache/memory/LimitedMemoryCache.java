@@ -2,7 +2,7 @@ package com.joy.glide.library.cache.memory;
 
 import android.graphics.Bitmap;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 import com.joy.glide.library.utils.GLog;
 
 import java.util.Collections;
@@ -40,7 +40,7 @@ public  abstract class LimitedMemoryCache extends BaseMemoryCache {
 	}
 
 	@Override
-	public boolean put(DrawableKey key, Bitmap value) {
+	public boolean put(Key key, Bitmap value) {
 		boolean putSuccessfully = false;
 		// Try to add value to hard cache
 		int valueSize = getSize(value);
@@ -64,7 +64,7 @@ public  abstract class LimitedMemoryCache extends BaseMemoryCache {
 	}
 
 	@Override
-	public Bitmap remove(DrawableKey key) {
+	public Bitmap remove(Key key) {
 		Bitmap value = super.get(key);
 		if (value != null) {
 			if (hardCache.remove(value)) {

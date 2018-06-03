@@ -2,7 +2,7 @@ package com.joy.glide.library.cache.memory.impl;
 
 import android.graphics.Bitmap;
 
-import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.cache.key.Key;
 import com.joy.glide.library.cache.memory.MemoryCache;
 
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class LruMemoryCache implements MemoryCache {
 
-	private final LinkedHashMap<DrawableKey, Bitmap> map;
+	private final LinkedHashMap<Key, Bitmap> map;
 
 	private final int maxSize;
 	/** Size of this cache in bytes */
@@ -28,7 +28,7 @@ public class LruMemoryCache implements MemoryCache {
 			throw new IllegalArgumentException("maxSize <= 0");
 		}
 		this.maxSize = maxSize;
-		this.map = new LinkedHashMap<DrawableKey, Bitmap>(0, 0.75f, true);
+		this.map = new LinkedHashMap<Key, Bitmap>(0, 0.75f, true);
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class LruMemoryCache implements MemoryCache {
 	 * of the queue. This returns null if a Bitmap is not cached.
 	 */
 	@Override
-	public final Bitmap get(DrawableKey key) {
+	public final Bitmap get(Key key) {
 		if (key == null) {
 			throw new NullPointerException("key == null");
 		}
@@ -48,7 +48,7 @@ public class LruMemoryCache implements MemoryCache {
 
 	/** Caches {@code Bitmap} for {@code key}. The Bitmap is moved to the head of the queue. */
 	@Override
-	public final boolean put(DrawableKey key, Bitmap value) {
+	public final boolean put(Key key, Bitmap value) {
 		if (key == null || value == null) {
 			throw new NullPointerException("key == null || value == null");
 		}
@@ -72,7 +72,7 @@ public class LruMemoryCache implements MemoryCache {
 	 */
 	private void trimToSize(int maxSize) {
 		while (true) {
-			DrawableKey key;
+			Key key;
 			Bitmap value;
 			synchronized (this) {
 				if (size < 0 || (map.isEmpty() && size != 0)) {
@@ -83,7 +83,7 @@ public class LruMemoryCache implements MemoryCache {
 					break;
 				}
 
-				Map.Entry<DrawableKey, Bitmap> toEvict = map.entrySet().iterator().next();
+				Map.Entry<Key, Bitmap> toEvict = map.entrySet().iterator().next();
 				if (toEvict == null) {
 					break;
 				}
@@ -97,7 +97,7 @@ public class LruMemoryCache implements MemoryCache {
 
 	/** Removes the entry for {@code key} if it exists. */
 	@Override
-	public final Bitmap remove(DrawableKey key) {
+	public final Bitmap remove(Key key) {
 		if (key == null) {
 			throw new NullPointerException("key == null");
 		}
@@ -112,9 +112,9 @@ public class LruMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public Collection<DrawableKey> keys() {
+	public Collection<Key> keys() {
 		synchronized (this) {
-			return new HashSet<DrawableKey>(map.keySet());
+			return new HashSet<Key>(map.keySet());
 		}
 	}
 
@@ -128,7 +128,7 @@ public class LruMemoryCache implements MemoryCache {
 	 * <p/>
 	 * An entry's size must not change while it is in the cache.
 	 */
-	private int sizeOf(DrawableKey key, Bitmap value) {
+	private int sizeOf(Key key, Bitmap value) {
 		return value.getRowBytes() * value.getHeight();
 	}
 

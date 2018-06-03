@@ -27,168 +27,208 @@ import me.joy.async.lib.task.AsynchronousTask;
 
 public class LocalDataSource implements DataSource {
 
-	private LocalDiskCache diskCache;
-	private MemoryLruCache memoryLruCache;
-	private CacheStrategySwitcher cacheStrategySwitcher;
-	private Exception exception;
+    private LocalDiskCache diskCache;
+    private MemoryLruCache memoryLruCache;
+    private MemoryCacheStrategy memoryCacheStrategy;
+    private DiskCacheStrategy diskCacheStrategy;
+    private static final int DEFAULT_AVAILABLE_MEMORY_PERCENT = 40;
 
-	public static class CacheStrategySwitcher {
-		boolean isMemoryCacheEnable;
-		boolean isDiskCacheEnable;
+    private Exception exception;
 
-		public CacheStrategySwitcher(boolean isMemoryCacheEnable, boolean isDiskCacheEnable) {
-			this.isMemoryCacheEnable = isMemoryCacheEnable;
-			this.isDiskCacheEnable = isDiskCacheEnable;
-		}
-	}
+    public static class MemoryCacheStrategy {
+        private boolean isMemoryCacheEnable;
+        private int availableMemoryPercent;
 
-	public Exception getException(String msg) {
-		if (null == exception) {
-			exception = new Exception(msg);
-		} return exception;
-	}
+        public MemoryCacheStrategy(boolean isMemoryCacheEnable, int availableMemoryPercent) {
+            this.isMemoryCacheEnable = isMemoryCacheEnable;
+            this.availableMemoryPercent = availableMemoryPercent;
+        }
+    }
 
-	public LocalDataSource(Context context) {
-		memoryLruCache = DefaultConfigurationFactory.createMemoryLruCache();
-		diskCache = DefaultConfigurationFactory.createDiskCache(context.getApplicationContext());
-	}
+    public static class DiskCacheStrategy {
+        private boolean isCacheSource;
+        private boolean isCacheResult;
 
-	public void setCacheStrategy(CacheStrategySwitcher cacheStrategySwitcher) {
-		this.cacheStrategySwitcher = cacheStrategySwitcher;
-	}
+        public DiskCacheStrategy(boolean isCacheSource, boolean isCacheResult) {
+            this.isCacheSource = isCacheSource;
+            this.isCacheResult = isCacheResult;
+        }
+    }
 
-	@Override
-	public void saveData(@NonNull final DrawableKey key, final Bitmap bitmap) {
-		AsynchronousTask<Void, Void> asyncTask = new AsynchronousTask<Void, Void>() {
 
-			@Override
-			protected Void doInBackground() {
-				if (cacheStrategySwitcher.isMemoryCacheEnable) {
-					GLog.printInfo("save to memory");
-					memoryLruCache.put(key, bitmap);
+    public Exception getException(String msg) {
+        if (null == exception) {
+            exception = new Exception(msg);
+        }
+        return exception;
+    }
 
-				}
-				if (cacheStrategySwitcher.isDiskCacheEnable) {
-					try {
-						GLog.printInfo("save to disk");
-						diskCache.save(key, bitmap);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+    public LocalDataSource(Context context) {
+        memoryLruCache = DefaultConfigurationFactory.createMemoryLruCache();
+        diskCache = DefaultConfigurationFactory.createDiskCache(context.getApplicationContext());
+    }
 
-				return null;
-			}
-		};
-		asyncTask.execute();
-	}
 
-	@Override
-	public Bitmap getData(@NonNull DrawableKey key) {
+    public void setMemoryCacheStrategy(MemoryCacheStrategy memoryCacheStrategy) {
+        if (null == memoryCacheStrategy) {
+            this.memoryCacheStrategy = new MemoryCacheStrategy(true,
+                    DEFAULT_AVAILABLE_MEMORY_PERCENT);
+        }
+        this.memoryCacheStrategy = memoryCacheStrategy;
+    }
 
-		if (null == cacheStrategySwitcher) {
-			return null;
-		}
-		Bitmap bitmap = null;
-		if (cacheStrategySwitcher.isMemoryCacheEnable) {
-			GLog.printInfo("strat load form memory data");
-			bitmap = memoryLruCache.get(key);
-			if (null != bitmap) {
-				return bitmap;
-			}
-		}
-		if (cacheStrategySwitcher.isDiskCacheEnable) {
-			GLog.printInfo("strat load form disk data");
-			File imageFile = diskCache.get(key);
-			if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
-				// to to opt
-				try {
-					bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
-					if (null != bitmap) {
-						return bitmap;
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
+    public void setDiskCacheStrategy(DiskCacheStrategy diskCacheStrategy) {
+        if (null == diskCacheStrategy) {
+            this.diskCacheStrategy = new DiskCacheStrategy(true, true);
+        }
+        this.diskCacheStrategy = diskCacheStrategy;
+    }
 
-			}
+    @Override
+    public void saveData(@NonNull final DrawableKey key, final Bitmap bitmap) {
+        AsynchronousTask<Void, Void> asyncTask = new AsynchronousTask<Void, Void>() {
 
-		}
-		return bitmap;
-	}
+            @Override
+            protected Void doInBackground() {
+                if (memoryCacheStrategy.isMemoryCacheEnable) {
+                    GLog.printInfo("save to memory");
+                    memoryLruCache.put(key, bitmap);
 
-	@Override
-	public void getDataAsync(@NonNull final DrawableKey key, final LoadDataCallback loadDataCallback) {
-		if (null == cacheStrategySwitcher) {
-			loadDataCallback.onDataLoadedError(getException("cacheStrategySwitcher must be init"));
-			return;
-		}
-		AsynchronousTask<Void, Bitmap> asynchronousTask = new AsynchronousTask<Void, Bitmap>() {
-			@Override
-			protected Bitmap doInBackground() {
-				if (null == cacheStrategySwitcher) {
-					return null;
-				}
-				Bitmap bitmap = null;
-				if (cacheStrategySwitcher.isMemoryCacheEnable) {
-					GLog.printInfo("strat load form memory data");
-					bitmap = memoryLruCache.get(key);
-					if (null != bitmap) {
-						GLog.printInfo("load from memoryLruCache onSuccess");
-						return bitmap;
-					}
-				}
-				if (cacheStrategySwitcher.isDiskCacheEnable) {
-					GLog.printInfo("strat load form disk data");
-					File imageFile = diskCache.get(key);
-					if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
-						// to to opt
-						try {
-							bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-						if (null != bitmap) {
-							GLog.printInfo("load from diskCache onSuccess");
-							return bitmap;
-						}
-					}
+                }
+                if (diskCacheStrategy.isCacheResult) {
+                    try {
+                        GLog.printInfo("save result to disk");
+                        diskCache.save(key, bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (diskCacheStrategy.isCacheSource) {
+                    try {
+                        GLog.printInfo("save source to disk");
+                        diskCache.save(key.getOriginalKey(), bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+        };
+        asyncTask.execute();
+    }
 
-				}
-				return bitmap;
+    @Override
+    public Bitmap getData(@NonNull DrawableKey key) {
 
-			}
+        Bitmap bitmap = null;
+        if (memoryCacheStrategy.isMemoryCacheEnable) {
+            GLog.printInfo("start load form memory data");
+            bitmap = memoryLruCache.get(key);
+            if (null != bitmap) {
+                return bitmap;
+            }
+        }
+        if (diskCacheStrategy.isCacheResult) {
+            GLog.printInfo("start load form disk result data");
+            File imageFile = diskCache.get(key);
+            if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
+                // to to opt
+                try {
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
+                    if (null != bitmap) {
+                        return bitmap;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (diskCacheStrategy.isCacheSource) {
+            GLog.printInfo("start load form disk result data");
+            File imageFile = diskCache.get(key.getOriginalKey());
+            if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
+                // to to opt
+                try {
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
+                    if (null != bitmap) {
+                        return bitmap;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
-			@Override
-			protected void onPostExecute(Bitmap bitmap) {
-				super.onPostExecute(bitmap);
-				if (null != bitmap) {
-					loadDataCallback.onDataLoaded(bitmap);
-				} else {
-					loadDataCallback.onDataLoadedError(getException("bitmap is null"));
-				}
-			}
-		};
+    @Override
+    public void getDataAsync(@NonNull final DrawableKey key, final LoadDataCallback
+            loadDataCallback) {
 
-		asynchronousTask.execute();
-	}
+        AsynchronousTask<Void, Bitmap> asynchronousTask = new AsynchronousTask<Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground() {
 
-	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-	@Override
-	public void deleteAll() {
-		memoryLruCache.clear();
-	}
+                Bitmap bitmap = null;
+                if (memoryCacheStrategy.isMemoryCacheEnable) {
+                    GLog.printInfo("start load form memory data");
+                    bitmap = memoryLruCache.get(key);
+                    if (null != bitmap) {
+                        GLog.printInfo("load from memoryLruCache onSuccess");
+                        return bitmap;
+                    }
+                }
+                if (diskCacheStrategy.isCacheResult) {
+                    GLog.printInfo("start load form disk data");
+                    File imageFile = diskCache.get(key);
+                    if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
+                        // to to opt
+                        try {
+                            bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        if (null != bitmap) {
+                            GLog.printInfo("load from diskCache onSuccess");
+                            return bitmap;
+                        }
+                    }
 
-	@Override
-	public void delete(@NonNull DrawableKey key) {
-		diskCache.clear();
-		memoryLruCache.remove(key);
-	}
+                }
+                return null;
 
-	@Override
-	public void cancel() {
-		//nothing to do
-	}
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                super.onPostExecute(bitmap);
+                if (null != bitmap) {
+                    loadDataCallback.onDataLoaded(bitmap);
+                } else {
+                    loadDataCallback.onDataLoadedError(getException("bitmap is null"));
+                }
+            }
+        };
+
+        asynchronousTask.execute();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void deleteAll() {
+        memoryLruCache.clear();
+    }
+
+    @Override
+    public void delete(@NonNull DrawableKey key) {
+        diskCache.clear();
+        memoryLruCache.remove(key);
+    }
+
+    @Override
+    public void cancel() {
+        //nothing to do
+    }
 
 
 }

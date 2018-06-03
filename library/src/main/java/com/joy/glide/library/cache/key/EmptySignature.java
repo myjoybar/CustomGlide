@@ -22,4 +22,9 @@ public final class EmptySignature implements Key {
     public void updateDiskCacheKey(MessageDigest messageDigest) throws UnsupportedEncodingException {
         // Do nothing.
     }
+
+    @Override
+    public Key getOriginalKey() {
+        return null;
+    }
 }

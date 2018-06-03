@@ -12,7 +12,6 @@ import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.data.source.local.LocalDataSourceInstance;
 import com.joy.glide.library.data.source.remote.RemoteDataSource;
-import com.joy.glide.library.load.engine.DiskCacheStrategy;
 import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.RequestOrder;
 import com.joy.glide.library.request.target.RequestListener;
@@ -36,15 +35,19 @@ public class GenericRequestBuilder<ModelType> {
 	private int errorId;
 	private ModelType model;
 	protected final Class<ModelType> modelClass;
-	private DiskCacheStrategy diskCacheStrategy = DiskCacheStrategy.RESULT;
-	private LocalDataSource.CacheStrategySwitcher cacheStrategySwitcher;
+	private LocalDataSource.MemoryCacheStrategy memoryCacheStrategy;
+	private LocalDataSource.DiskCacheStrategy diskCacheStrategy;
 	private Context context;
 	DataRepository dataRepository;
 
 	public GenericRequestBuilder(Context context, Class<ModelType> modelClass, ModelType url) {
 		this.context = context;
 		this.modelClass = modelClass;
-		requestTaskOrder = new RequestOrder(url);
+		if (RequestOrder.class.isAssignableFrom(url.getClass())) {
+			requestTaskOrder = new RequestOrder(((RequestOrder)url).getUrl());
+		}else{
+			requestTaskOrder = new RequestOrder(url);
+		}
 	}
 
 	public GenericRequestBuilder<ModelType> load(ModelType model) {
@@ -52,20 +55,21 @@ public class GenericRequestBuilder<ModelType> {
 		return this;
 	}
 
-	public GenericRequestBuilder<ModelType> diskCacheStrategy(DiskCacheStrategy strategy) {
+	public GenericRequestBuilder<ModelType> diskCacheStrategy(LocalDataSource.DiskCacheStrategy strategy) {
 		this.diskCacheStrategy = strategy;
 		return this;
 	}
-
-	public GenericRequestBuilder<ModelType> cacheStrategySwitcher(LocalDataSource.CacheStrategySwitcher cacheStrategySwitcher) {
-		this.cacheStrategySwitcher = cacheStrategySwitcher;
+	public GenericRequestBuilder<ModelType> memoryCacheStrategy(LocalDataSource.MemoryCacheStrategy strategy) {
+		this.memoryCacheStrategy = strategy;
 		return this;
 	}
+
 
 	private void prepareDataRepository() {
 
 		LocalDataSource localDataSource = LocalDataSourceInstance.getInstance(context).getLocalDataSource();
-		localDataSource.setCacheStrategy(cacheStrategySwitcher);
+		localDataSource.setDiskCacheStrategy(diskCacheStrategy);
+		localDataSource.setMemoryCacheStrategy(memoryCacheStrategy);
 		DataSource remoteDataSource = new RemoteDataSource(requestTaskOrder);
 		dataRepository = new DataRepository(localDataSource, remoteDataSource);
 

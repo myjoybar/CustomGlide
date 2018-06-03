@@ -30,6 +30,7 @@ public class DrawableKey implements Key {
         this.signature = signature;
     }
 
+    @Override
     public Key getOriginalKey() {
         if (originalKey == null) {
             originalKey = new OriginalKey(id, signature);
