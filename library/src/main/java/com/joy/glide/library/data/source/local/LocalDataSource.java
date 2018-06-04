@@ -25,7 +25,7 @@ import me.joy.async.lib.task.AsynchronousTask;
  * Created by joybar on 2018/5/30.
  */
 
-public class LocalDataSource implements DataSource {
+public class LocalDataSource<R> implements DataSource<R> {
 
     private LocalDiskCache diskCache;
     private MemoryLruCache memoryLruCache;
@@ -85,20 +85,20 @@ public class LocalDataSource implements DataSource {
     }
 
     @Override
-    public void saveData(@NonNull final DrawableKey key, final Bitmap bitmap) {
+    public void saveData(@NonNull final DrawableKey key, final R resource) {
         AsynchronousTask<Void, Void> asyncTask = new AsynchronousTask<Void, Void>() {
 
             @Override
             protected Void doInBackground() {
                 if (memoryCacheStrategy.isMemoryCacheEnable) {
                     GLog.printInfo("save to memory");
-                    memoryLruCache.put(key, bitmap);
+                    memoryLruCache.put(key, (Bitmap) resource);
 
                 }
                 if (diskCacheStrategy.isCacheResult) {
                     try {
                         GLog.printInfo("save result to disk");
-                        diskCache.save(key, bitmap);
+                        diskCache.save(key, (Bitmap) resource);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -106,7 +106,7 @@ public class LocalDataSource implements DataSource {
                 if (diskCacheStrategy.isCacheSource) {
                     try {
                         GLog.printInfo("save source to disk");
-                        diskCache.save(key.getOriginalKey(), bitmap);
+                        diskCache.save(key.getOriginalKey(), (Bitmap)resource);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -118,14 +118,14 @@ public class LocalDataSource implements DataSource {
     }
 
     @Override
-    public Bitmap getData(@NonNull DrawableKey key) {
+    public R getData(@NonNull DrawableKey key) {
 
         Bitmap bitmap = null;
         if (memoryCacheStrategy.isMemoryCacheEnable) {
             GLog.printInfo("start load form memory data");
             bitmap = memoryLruCache.get(key);
             if (null != bitmap) {
-                return bitmap;
+                return (R)bitmap;
             }
         }
         if (diskCacheStrategy.isCacheResult) {
@@ -136,7 +136,7 @@ public class LocalDataSource implements DataSource {
                 try {
                     bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
                     if (null != bitmap) {
-                        return bitmap;
+                        return (R)bitmap;
                     }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -151,7 +151,7 @@ public class LocalDataSource implements DataSource {
                 try {
                     bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFile));
                     if (null != bitmap) {
-                        return bitmap;
+                        return (R)bitmap;
                     }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -162,7 +162,12 @@ public class LocalDataSource implements DataSource {
     }
 
     @Override
-    public void getDataAsync(@NonNull final DrawableKey key, final LoadDataCallback
+    public void getDataAsync(@NonNull DrawableKey key) {
+
+    }
+
+    @Override
+    public void getDataAsync(@NonNull final DrawableKey key, final LoadDataListener
             loadDataCallback) {
 
         AsynchronousTask<Void, Bitmap> asynchronousTask = new AsynchronousTask<Void, Bitmap>() {

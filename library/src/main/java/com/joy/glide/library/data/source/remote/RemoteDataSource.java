@@ -9,6 +9,7 @@ import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.helper.asynfactory.AsyncFactoryHelper;
 import com.joy.glide.library.helper.asynfactory.Callback;
 import com.joy.glide.library.request.RequestOrder;
+import com.joy.glide.library.request.target.Target;
 import com.joy.glide.library.utils.GLog;
 import com.joy.smoothhttp.call.ICall;
 import com.joy.smoothhttp.response.Response;
@@ -23,28 +24,34 @@ import me.joy.async.lib.task.AsynchronousTask;
  * Created by joybar on 2018/5/30.
  */
 
-public class RemoteDataSource implements DataSource {
+public class RemoteDataSource<R> implements DataSource<R> {
+
 
     private RequestOrder requestOrder;
     private ICall<Response> call;
-
+    Target<R>  target;
     public RemoteDataSource(RequestOrder requestOrder) {
         this.requestOrder = requestOrder;
     }
 
     @Override
-    public void saveData(@NonNull DrawableKey key, Bitmap bitmap) {
+    public void saveData(@NonNull DrawableKey key,R resource) {
         // nothing to do
     }
 
     @Override
-    public Bitmap getData(@NonNull DrawableKey key) {
+    public R getData(@NonNull DrawableKey key) {
         // nothing to do
         return null;
     }
 
     @Override
-    public void getDataAsync(@NonNull DrawableKey key, final LoadDataCallback loadDataCallback) {
+    public void getDataAsync(@NonNull DrawableKey key) {
+
+    }
+
+    @Override
+    public void getDataAsync(@NonNull DrawableKey key, final LoadDataListener loadDataCallback) {
         GLog.printInfo("url = " + requestOrder.getUrl().toString());
         if (requestOrder.getUrl() instanceof String) {
             GLog.printInfo("load from server");

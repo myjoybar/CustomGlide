@@ -24,15 +24,22 @@ public class RequestManager {
 	}
 
 	public DrawableRequest<String> load(String string) {
-		return drawableRequestBuilder = new DrawableRequest<String>(context, String.class, string);
+		//return drawableRequestBuilder = new DrawableRequest<String>(context, String.class, string);
+		return build(string);
 	}
 
 	public DrawableRequest<File> load(File file) {
-		return drawableRequestBuilder = new DrawableRequest<File>(context, File.class, file);
+		//return drawableRequestBuilder = new DrawableRequest<File>(context, File.class, file);
+		return build(file);
 	}
 
-	public <T> DrawableRequest<T> load(T model) {
-		return drawableRequestBuilder = new DrawableRequest<T>(context, getSafeClass(model), model);
+	public <T extends RequestOrder> DrawableRequest<T> load(T model) {
+		//return drawableRequestBuilder = new DrawableRequest<T>(context, getSafeClass(model), model);
+		return build(model);
+	}
+
+	private <T> DrawableRequest<T> build(T model){
+		return new DrawableRequest<T>(context, getSafeClass(model), model);
 	}
 
 	private static <T> Class<T> getSafeClass(T model) {

@@ -2,8 +2,8 @@ package com.joy.glide;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
-import com.joy.glide.library.request.target.RequestListener;
+import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.utils.GLog;
 
 import org.json.JSONObject;
@@ -66,25 +66,27 @@ public class MainActivityB extends AppCompatActivity {
 				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg\n";
 		String url3 = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527755692&di=92a1fa763f1ad16fab7519b63585f4a1&imgtype=jpg&er=1&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2Fe%2F57ea2e81b367d.jpg";
 
-		Glide.with(this).load(url3).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new RequestListener() {
+		Glide.with(this).load(url3).placeholder(R.drawable.placeholder).error(R.drawable.error).listener(new DataSource.LoadDataListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
 			}
 
 			@Override
+			public void onDataLoaded(Object resource) {
+				GLog.printInfo("onResourceReady");
+
+			}
+
+			@Override
+			public void onDataLoadedError(@NonNull Throwable throwable) {
+				GLog.printInfo("onException, " + throwable.getMessage());
+
+			}
+
+			@Override
 			public void onProgressUpdate(int value) {
 			//	GLog.printInfo("onProgressUpdate, value" + value);
-			}
-
-			@Override
-			public void onResourceReady(Bitmap bitmap) {
-				GLog.printInfo("onResourceReady");
-			}
-
-			@Override
-			public void onException(Throwable throwable) {
-				GLog.printInfo("onException, " + throwable.getMessage());
 			}
 
 			@Override

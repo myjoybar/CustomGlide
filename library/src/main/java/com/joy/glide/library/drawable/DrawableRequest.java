@@ -3,7 +3,7 @@ package com.joy.glide.library.drawable;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.joy.glide.library.request.target.RequestListener;
+import com.joy.glide.library.data.DataSource;
 
 /**
  * Created by joybar on 2018/5/9.
@@ -33,8 +33,8 @@ public class DrawableRequest<ModelType> extends DrawableRequestBuilder<ModelType
 	}
 
 	@Override
-	public DrawableRequest listener(RequestListener requestListener) {
-		super.listener(requestListener);
+	public DrawableRequest listener(DataSource.LoadDataListener loadDataListener) {
+		super.listener(loadDataListener);
 		return this;
 	}
 

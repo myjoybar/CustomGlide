@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.drawable.DrawableRequest;
 import com.joy.glide.library.helper.lifecycle.LifecycleHelper;
-import com.joy.glide.library.request.target.RequestListener;
 import com.joy.glide.library.utils.GLog;
 import com.lifecycle.joybar.lifecyclelistener.interfaces.LifecycleListener;
 
@@ -62,10 +62,10 @@ public class RequestManagerRetriever {
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
 				if (null != drawableRequestBuilder   ) {
-					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
+					DataSource.LoadDataListener loadDataListener = drawableRequestBuilder.getLoadDataListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
-					if (null != requestListener) {
-						requestListener.onCancelled();
+					if (null != loadDataListener) {
+						loadDataListener.onCancelled();
 					}
 					drawableRequestBuilder.cancelRequest();
 				}
@@ -103,10 +103,10 @@ public class RequestManagerRetriever {
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
 				if (null != drawableRequestBuilder   ) {
-					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
+					DataSource.LoadDataListener loadDataListener = drawableRequestBuilder.getLoadDataListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
-					if (null != requestListener) {
-						requestListener.onCancelled();
+					if (null != loadDataListener) {
+						loadDataListener.onCancelled();
 					}
 					drawableRequestBuilder.cancelRequest();
 				}
@@ -142,10 +142,10 @@ public class RequestManagerRetriever {
 			public void onDestroy() {
 				DrawableRequest drawableRequestBuilder = requestManager.getRequestBuilder();
 				if (null != drawableRequestBuilder   ) {
-					RequestListener requestListener = drawableRequestBuilder.getRequestListener();
+					DataSource.LoadDataListener loadDataListener = drawableRequestBuilder.getLoadDataListener();
 					GLog.printInfo("onDestroy,so cancelRequest");
-					if (null != requestListener) {
-						requestListener.onCancelled();
+					if (null != loadDataListener) {
+						loadDataListener.onCancelled();
 					}
 					drawableRequestBuilder.cancelRequest();
 				}

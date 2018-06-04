@@ -1,11 +1,12 @@
 package com.joy.glide;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -16,9 +17,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
+import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.request.RequestOrder;
-import com.joy.glide.library.request.target.RequestListener;
 import com.joy.glide.library.utils.GLog;
 
 import org.json.JSONObject;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 	public static String TAG = "MainActivity";
 	ImageView imv1;
+	LinearLayout lin;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 		setClickListener();
 
 	}
-	private void setClickListener(){
+
+	private void setClickListener() {
 		findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -54,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
 	private void initView() {
 		imv1 = this.findViewById(R.id.imv1);
+		lin = this.findViewById(R.id.lin);
 	}
 
-	private void test2(){
+	private void test2() {
 		File file = new File(getExternalCacheDir() + "/image.jpg");
 		//Glide.with(this).load(file).into(imageView);
 	}
@@ -73,43 +77,44 @@ public class MainActivity extends AppCompatActivity {
 		File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
 
 		//GLog.printInfo("file="+file.getName());
-		GLog.printInfo("file="+file2.getAbsolutePath());
-		String urlBig  = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
+		GLog.printInfo("file=" + file2.getAbsolutePath());
+		String urlBig = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this)
-				//.load(url)
-				.load(new MyUrl(url))
-				.placeholder(R.drawable.placeholder)
-				.error(R.drawable.error)
-				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(false,60))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
-				.listener(new RequestListener() {
+		Glide.with(this).load(file2)
+				//.load(new MyUrl(url))
+				.placeholder(R.drawable.placeholder).error(R.drawable.error).memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true)).listener(new DataSource.LoadDataListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
 			}
 
 			@Override
-			public void onProgressUpdate(int value) {
-				GLog.printInfo("onProgressUpdate, value"+value);
-			}
-
-			@Override
-			public void onResourceReady(Bitmap bitmap) {
+			public void onDataLoaded(Object resource) {
 				GLog.printInfo("onResourceReady");
 			}
 
 			@Override
-			public void onException(Throwable throwable) {
-				GLog.printInfo("onException, "+throwable.getMessage());
+			public void onDataLoadedError(@NonNull Throwable throwable) {
+				GLog.printInfo("onException, " + throwable.getMessage());
 			}
+
+			@Override
+			public void onProgressUpdate(int value) {
+				GLog.printInfo("onProgressUpdate, value" + value);
+			}
+
 
 			@Override
 			public void onCancelled() {
 				GLog.printInfo("onCancelled");
 			}
-		}).into(imv1);
+		})
+				.preload();
+		//			.into(imv1);
+		//.asDrawable()
+		//		.into(new SimpleDrawableViewTarget(lin));
 
 	}
 
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		StringRequest stringRequest1 = new StringRequest(Request.Method.POST, url1,  new Response.Listener<String>() {
+		StringRequest stringRequest1 = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
 			@Override
 			public void onResponse(String response) {
 				Log.d(TAG, response);
@@ -168,13 +173,12 @@ public class MainActivity extends AppCompatActivity {
 	private void testJson() {
 		String url1 = "https://www.baidu.com";
 		String url2 = "http://www.weather.com.cn/data/cityinfo/101010100.html";
-		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url2, null,
-				new Response.Listener<JSONObject>() {
-					@Override
-					public void onResponse(JSONObject response) {
-						Log.d(TAG, response.toString());
-					}
-				}, new Response.ErrorListener() {
+		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url2, null, new Response.Listener<JSONObject>() {
+			@Override
+			public void onResponse(JSONObject response) {
+				Log.d(TAG, response.toString());
+			}
+		}, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				Log.e(TAG, error.getMessage(), error);
@@ -184,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 		mQueue.add(jsonObjectRequest);
 	}
 
-	private void test(){
+	private void test() {
 
 	}
 

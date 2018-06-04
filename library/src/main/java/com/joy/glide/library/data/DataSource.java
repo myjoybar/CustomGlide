@@ -1,6 +1,5 @@
 package com.joy.glide.library.data;
 
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import com.joy.glide.library.cache.key.DrawableKey;
@@ -9,23 +8,57 @@ import com.joy.glide.library.cache.key.DrawableKey;
  * Created by joybar on 2018/5/30.
  */
 
-public interface DataSource {
+public interface DataSource<R> {
 
-	interface LoadDataCallback {
+	interface LoadDataListener<R> {
 
-		void onDataLoaded(Bitmap bitmap);
+		void onLoadStarted();
+
+		void onDataLoaded(R resource);
 
 		void onDataLoadedError(@NonNull Throwable throwable);
 
 		void onProgressUpdate(int value);
 
+		void onCancelled();
+
 	}
 
-	void saveData(@NonNull DrawableKey key, Bitmap bitmap);
+	abstract class LoadDataListenerAdapter<R> implements LoadDataListener<R> {
+		@Override
+		public void onLoadStarted() {
 
-	Bitmap getData(@NonNull DrawableKey key);
+		}
 
-	void getDataAsync(@NonNull DrawableKey key, LoadDataCallback loadDataCallback);
+		@Override
+		public void onDataLoaded(R resource) {
+
+		}
+
+		@Override
+		public void onDataLoadedError(@NonNull Throwable throwable) {
+
+		}
+
+		@Override
+		public void onProgressUpdate(int value) {
+
+		}
+
+		@Override
+		public void onCancelled() {
+
+		}
+	}
+
+
+	void saveData(@NonNull DrawableKey key, R resource);
+
+	R getData(@NonNull DrawableKey key);
+
+	void getDataAsync(@NonNull DrawableKey key);
+
+	void getDataAsync(@NonNull DrawableKey key, LoadDataListener loadDataCallback);
 
 	void deleteAll();
 
