@@ -15,7 +15,7 @@ import com.joy.glide.library.data.source.remote.RemoteDataSource;
 import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.GenericRequest;
 import com.joy.glide.library.request.RequestOrder;
-import com.joy.glide.library.request.target.BitmapImageViewTarget;
+import com.joy.glide.library.request.target.DrawableImageViewTarget;
 import com.joy.glide.library.request.target.PreloadViewTarget;
 import com.joy.glide.library.request.target.ViewTarget;
 import com.joy.glide.library.resource.DrawableTransformer;
@@ -100,7 +100,8 @@ public class GenericRequestBuilder<ModelType> {
 	}
 
 	public void into(final ImageView imageView) {
-		this.into(new BitmapImageViewTarget(imageView));
+		//this.into(new BitmapImageViewTarget(imageView));
+		this.into(new DrawableImageViewTarget(imageView));
 	}
 
 	private DataRepository createDataRepository() {

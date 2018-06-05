@@ -1,12 +1,24 @@
 package com.joy.glide.library.data;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 
 import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.GenericRequest;
 import com.joy.glide.library.request.target.ViewTarget;
-import com.joy.glide.library.resource.ResourceTransformer;
 import com.joy.glide.library.utils.GLog;
+import com.joy.smoothhttp.response.Response;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by joybar on 2018/5/30.
@@ -56,16 +68,34 @@ public class DataRepository<R> implements DataSource<R> {
 		localDataSource.getDataAsync(key, new LoadDataListenerAdapter<R>() {
 			@Override
 			public void onDataLoaded(R resource) {
-				dataLoaded(key, resource, loadDataListener, viewTarget, true);
+				Bitmap bitmap = (Bitmap) resource;
+				Drawable drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
+				attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, false);
 			}
 
 			@Override
 			public void onDataLoadedError(@NonNull Throwable throwable) {
 				GLog.printWarning("load form local data,onDataLoadedError");
-				remoteDataSource.getDataAsync(key, new LoadDataListenerAdapter<R>() {
+				remoteDataSource.getDataAsync(key, new LoadDataListenerAdapter<Response>() {
 					@Override
-					public void onDataLoaded(R resource) {
-						dataLoaded(key, resource, loadDataListener, viewTarget, true);
+					public void onDataLoaded(Response response) {
+						try {
+							Drawable drawable = null;
+							Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody()
+									.getBytes().length);
+							if (isGif(response.getResponseBody().getBytes())) {
+								GLog.printInfo("this is gif ");
+								byte[] rawGifBytes = response.getResponseBody().getBytes();
+								drawable = new GifDrawable(rawGifBytes);
+							} else {
+								GLog.printInfo("this is not gif ");
+								drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
+							}
+							attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, true);
+
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 
 					@Override
@@ -95,6 +125,21 @@ public class DataRepository<R> implements DataSource<R> {
 		});
 	}
 
+	private boolean isGif(byte[] bytes) throws IOException {
+		InputStream inputStream = new ByteArrayInputStream(bytes);
+		ImageHeaderParser.ImageType type = new ImageHeaderParser(inputStream).getType();
+		return type == ImageHeaderParser.ImageType.GIF;
+	}
+
+	private byte[] bitmapToByteArray(Bitmap bitmap) {
+		int bytes = bitmap.getByteCount();
+
+		ByteBuffer buf = ByteBuffer.allocate(bytes);
+		bitmap.copyPixelsToBuffer(buf);
+		byte[] byteArray = buf.array();
+		return byteArray;
+	}
+
 	@Override
 	public void getDataAsync(@NonNull final DrawableKey key, final LoadDataListener loadDataCallback) {
 	}
@@ -116,18 +161,14 @@ public class DataRepository<R> implements DataSource<R> {
 		remoteDataSource.cancel();
 	}
 
-	private void dataLoaded(DrawableKey key, R resource, LoadDataListener loadDataListener, ViewTarget viewTarget, boolean isSavedData) {
+	private void attachDataToTarget(DrawableKey key, Drawable drawable, Bitmap bitmap, LoadDataListener loadDataListener, ViewTarget viewTarget,
+									boolean isSavedData) {
 		if (null != loadDataListener) {
-			loadDataListener.onDataLoaded(resource);
+			loadDataListener.onDataLoaded(drawable);
 		}
-		ResourceTransformer resourceTransformer = genericRequest.getResourceTransformer();
-		if (null != resourceTransformer && null != viewTarget) {
-			viewTarget.onDataLoaded(resourceTransformer.transform(resource));
-		} else {
-			viewTarget.onDataLoaded(resource);
-		}
+		viewTarget.onDataLoaded(drawable);
 		if (isSavedData) {
-			saveData(key, resource);
+			saveData(key, (R) bitmap);
 		}
 	}
 

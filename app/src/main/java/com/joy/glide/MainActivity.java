@@ -20,6 +20,7 @@ import com.joy.glide.library.Glide;
 import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.request.RequestOrder;
+import com.joy.glide.library.request.target.SimpleDrawableViewTarget;
 import com.joy.glide.library.utils.GLog;
 
 import org.json.JSONObject;
@@ -81,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
 		String urlBig = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(file2)
+		Glide.with(this).load(urlGif)
 				//.load(new MyUrl(url))
 				.placeholder(R.drawable.placeholder).error(R.drawable.error).memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true)).listener(new DataSource.LoadDataListener() {
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(false, false)).listener(new DataSource.LoadDataListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressUpdate(int value) {
-				GLog.printInfo("onProgressUpdate, value" + value);
+			//	GLog.printInfo("onProgressUpdate, value" + value);
 			}
 
 
@@ -111,10 +112,10 @@ public class MainActivity extends AppCompatActivity {
 				GLog.printInfo("onCancelled");
 			}
 		})
-				.preload();
-		//			.into(imv1);
+				//		.preload();
+		//	.into(imv1);
 		//.asDrawable()
-		//		.into(new SimpleDrawableViewTarget(lin));
+				.into(new SimpleDrawableViewTarget(lin));
 
 	}
 

@@ -72,8 +72,9 @@ public class RemoteDataSource<R> implements DataSource<R> {
                 @Override
                 public void onResponse(RequestOrder requestOrder, Response response) {
                     GLog.printInfo("onResponse");
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody().getBytes().length);
-                    loadDataCallback.onDataLoaded(bitmap);
+                 //   Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody().getBytes() .length);
+                  //  loadDataCallback.onDataLoaded(bitmap);
+                    loadDataCallback.onDataLoaded(response);
                 }
 
                 @Override
