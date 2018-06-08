@@ -73,7 +73,7 @@ public class DataRepository<R> implements DataSource<R> {
 			@Override
 			public void onDataLoaded(R resource) {
 				Bitmap bitmap = (Bitmap) resource;
-				bitmap = bitMaoTransform(bitmap);
+				bitmap = bitMapTransform(bitmap);
 				Drawable drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
 				attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, false);
 			}
@@ -88,7 +88,7 @@ public class DataRepository<R> implements DataSource<R> {
 							Drawable drawable = null;
 							Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody()
 									.getBytes().length);
-							bitmap = bitMaoTransform(bitmap);
+							bitmap = bitMapTransform(bitmap);
 							if (isGif(response.getResponseBody().getBytes())) {
 								GLog.printInfo("this is gif ");
 								byte[] rawGifBytes = response.getResponseBody().getBytes();
@@ -178,13 +178,12 @@ public class DataRepository<R> implements DataSource<R> {
 		}
 	}
 
-	private Bitmap bitMaoTransform(Bitmap source) {
+	private Bitmap bitMapTransform(Bitmap source) {
 		ViewTarget viewTarget = genericRequest.getViewTarget();
-		Transformation  transformation = genericRequest.getTransformation();
+		Transformation transformation = genericRequest.getTransformation();
 		BitmapResource bitmapResource = new BitmapResource(source, Glide.get(genericRequest.getContext()).getBitmapPool());
-		Resource<Bitmap> result = transformation.transform(bitmapResource, 10, 10);
+		Resource<Bitmap> result = transformation.transform(bitmapResource, viewTarget.getWidth(), viewTarget.getHeight());
 		return result.get();
-		//return source;
 
 	}
 

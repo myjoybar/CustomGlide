@@ -14,6 +14,7 @@ import com.joy.glide.R;
 import com.joy.glide.library.Glide;
 import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
+import com.joy.glide.library.load.resource.bitmap.CircleCrop;
 import com.joy.glide.library.utils.GLog;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class MyRecyclerViewAdapterCustom extends RecyclerView.Adapter<MyRecycler
 		Glide.with(imageView.getContext()).load(url)
 				.placeholder(R.drawable.placeholder)
 				.error(R.drawable.error)
+				.transform(new CircleCrop(imageView.getContext()))
 				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
 				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
 				.listener(new DataSource.LoadDataListener() {
