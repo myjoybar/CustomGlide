@@ -102,7 +102,7 @@ public class DataRepository<R> implements DataSource<R> {
 					public void onDataLoadedError(@NonNull Throwable throwable) {
 						GLog.printWarning("load form remote data,onDataLoadedError");
 						if (null != viewTarget) {
-							viewTarget.onDataLoaded(genericRequest.getErrorId());
+							viewTarget.setErrorHolder(genericRequest.getErrorId());
 						}
 						if (null != loadDataListener) {
 							loadDataListener.onDataLoadedError(throwable);

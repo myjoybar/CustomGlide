@@ -13,7 +13,7 @@ import java.io.InputStream;
  * Created by joybar on 2018/5/29.
  */
 
-public interface DiskCache<R> {
+public interface DiskCache {
 
 	File getDirectory();
 

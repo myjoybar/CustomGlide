@@ -19,6 +19,8 @@
 
         <activity android:name=".MainActivityB">
         </activity>
+        <activity android:name=".recyclerview.MainActivityRecyclerview">
+        </activity>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />

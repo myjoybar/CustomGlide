@@ -6,6 +6,7 @@ import com.joy.glide.library.cache.disk.naming.FileNameGenerator;
 import com.joy.glide.library.cache.key.Key;
 import com.joy.glide.library.cache.utils.FileUtil;
 import com.joy.glide.library.cache.utils.IoUtils;
+import com.joy.glide.library.utils.GLog;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -120,6 +121,7 @@ public class LocalDiskCache implements DiskCache {
 		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
 			if (reserveCacheDir != null && (reserveCacheDir.exists() || reserveCacheDir.mkdirs())) {
 				dir = reserveCacheDir;
+				GLog.printInfo("reserveCacheDir="+reserveCacheDir.getAbsolutePath());
 			}
 		}
 		return new File(dir, fileName);

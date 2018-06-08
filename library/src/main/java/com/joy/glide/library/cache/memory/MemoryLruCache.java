@@ -6,6 +6,7 @@ import android.support.annotation.RequiresApi;
 import android.util.LruCache;
 
 import com.joy.glide.library.cache.key.Key;
+import com.joy.glide.library.utils.GLog;
 
 import java.util.Collection;
 
@@ -26,6 +27,7 @@ public class MemoryLruCache implements MemoryCache {
 		if (availableMemoryPercent <= 0 || availableMemoryPercent >= 100) {
 			throw new IllegalArgumentException("availableMemoryPercent must be in range (0 < % < 100)");
 		}
+		GLog.printInfo("availableMemoryPercent= "+availableMemoryPercent);
 		int maxMemory = (int) Runtime.getRuntime().maxMemory();
 		int cacheSize = maxMemory *availableMemoryPercent/ 100;
 		mMemoryCache = new LruCache<Key, Bitmap>(cacheSize) {

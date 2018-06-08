@@ -22,6 +22,7 @@ import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.request.RequestOrder;
 import com.joy.glide.library.request.target.SimpleDrawableViewTarget;
 import com.joy.glide.library.utils.GLog;
+import com.joy.glide.recyclerview.MainActivityRecyclerview;
 
 import org.json.JSONObject;
 
@@ -54,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
 				//MainActivityB.launch(MainActivity.this);
 			}
 		});
+
+		findViewById(R.id.btn_enter).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MainActivityRecyclerview.launch(MainActivity.this);
+			}
+		});
+
+
+
 	}
 
 	private void initView() {
