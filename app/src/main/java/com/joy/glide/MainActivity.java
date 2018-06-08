@@ -19,8 +19,8 @@ import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
 import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
+import com.joy.glide.library.load.resource.bitmap.CircleCrop;
 import com.joy.glide.library.request.RequestOrder;
-import com.joy.glide.library.request.target.SimpleDrawableViewTarget;
 import com.joy.glide.library.utils.GLog;
 import com.joy.glide.recyclerview.MainActivityRecyclerview;
 
@@ -93,9 +93,10 @@ public class MainActivity extends AppCompatActivity {
 		String urlBig = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
 
 		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(urlGif)
+		Glide.with(this).load(url)
 				//.load(new MyUrl(url))
 				.placeholder(R.drawable.placeholder).error(R.drawable.error).memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
+				.transform(new CircleCrop(this))
 				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(false, false)).listener(new DataSource.LoadDataListener() {
 			@Override
 			public void onLoadStarted() {
@@ -124,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
 			}
 		})
 				//		.preload();
-		//	.into(imv1);
+			.into(imv1);
 		//.asDrawable()
-				.into(new SimpleDrawableViewTarget(lin));
+		//		.into(new SimpleDrawableViewTarget(lin));
 
 	}
 

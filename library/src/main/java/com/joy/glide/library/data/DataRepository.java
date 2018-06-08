@@ -6,7 +6,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 
+import com.joy.glide.library.Glide;
 import com.joy.glide.library.cache.key.DrawableKey;
+import com.joy.glide.library.load.Transformation;
+import com.joy.glide.library.load.engine.Resource;
+import com.joy.glide.library.load.resource.bitmap.BitmapResource;
 import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.GenericRequest;
 import com.joy.glide.library.request.target.ViewTarget;
@@ -69,6 +73,7 @@ public class DataRepository<R> implements DataSource<R> {
 			@Override
 			public void onDataLoaded(R resource) {
 				Bitmap bitmap = (Bitmap) resource;
+				bitmap = bitMaoTransform(bitmap);
 				Drawable drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
 				attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, false);
 			}
@@ -83,6 +88,7 @@ public class DataRepository<R> implements DataSource<R> {
 							Drawable drawable = null;
 							Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody()
 									.getBytes().length);
+							bitmap = bitMaoTransform(bitmap);
 							if (isGif(response.getResponseBody().getBytes())) {
 								GLog.printInfo("this is gif ");
 								byte[] rawGifBytes = response.getResponseBody().getBytes();
@@ -171,5 +177,16 @@ public class DataRepository<R> implements DataSource<R> {
 			saveData(key, (R) bitmap);
 		}
 	}
+
+	private Bitmap bitMaoTransform(Bitmap source) {
+		ViewTarget viewTarget = genericRequest.getViewTarget();
+		Transformation  transformation = genericRequest.getTransformation();
+		BitmapResource bitmapResource = new BitmapResource(source, Glide.get(genericRequest.getContext()).getBitmapPool());
+		Resource<Bitmap> result = transformation.transform(bitmapResource, 10, 10);
+		return result.get();
+		//return source;
+
+	}
+
 
 }

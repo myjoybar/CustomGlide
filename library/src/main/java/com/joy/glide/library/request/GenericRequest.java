@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
+import com.joy.glide.library.load.Transformation;
 import com.joy.glide.library.request.target.ViewTarget;
 import com.joy.glide.library.resource.ResourceTransformer;
 
@@ -24,11 +25,15 @@ public class GenericRequest<ModelType> {
 	private Context context;
 	private ViewTarget viewTarget;
 	private ResourceTransformer resourceTransformer;
+	private int overrideHeight = -1;
+	private int overrideWidth = -1;
+	Transformation transformation;
 
 	public GenericRequest(RequestOrder<ModelType> requestTaskOrder, DataSource.LoadDataListener loadDataListener, int placeholderId, int errorId,
 						  ModelType model, Class<ModelType> modelClass, LocalDataSource.MemoryCacheStrategy memoryCacheStrategy, LocalDataSource
 								  .DiskCacheStrategy diskCacheStrategy, Context context,  ViewTarget
-								  viewTarget, ResourceTransformer resourceTransformer) {
+								  viewTarget, ResourceTransformer resourceTransformer,int overrideWidth,int overrideHeight,Transformation
+								  transformation) {
 		this.requestTaskOrder = requestTaskOrder;
 		this.loadDataListener = loadDataListener;
 		this.placeholderId = placeholderId;
@@ -40,16 +45,17 @@ public class GenericRequest<ModelType> {
 		this.context = context;
 		this.viewTarget = viewTarget;
 		this.resourceTransformer = resourceTransformer;
+		this.transformation = transformation;
 	}
 
 	public static <ModelType> GenericRequest<ModelType> obtain(RequestOrder<ModelType> requestTaskOrder, DataSource.LoadDataListener
 			loadDataListener, int placeholderId, int errorId, ModelType model, Class<ModelType> modelClass, LocalDataSource.MemoryCacheStrategy
 			memoryCacheStrategy, LocalDataSource.DiskCacheStrategy diskCacheStrategy, Context context, ViewTarget viewTarget, ResourceTransformer
-			resourceTransformer
+			resourceTransformer,int overrideWidth,int overrideHeight,Transformation transformation
 
 	) {
 		return new GenericRequest<>(requestTaskOrder, loadDataListener, placeholderId, errorId, model, modelClass, memoryCacheStrategy,
-				diskCacheStrategy, context, viewTarget, resourceTransformer);
+				diskCacheStrategy, context, viewTarget, resourceTransformer,overrideWidth,overrideHeight,transformation);
 	}
 
 	public RequestOrder<ModelType> getRequestTaskOrder() {
@@ -95,5 +101,21 @@ public class GenericRequest<ModelType> {
 
 	public ResourceTransformer getResourceTransformer() {
 		return resourceTransformer;
+	}
+
+	public DataSource.LoadDataListener getLoadDataListener() {
+		return loadDataListener;
+	}
+
+	public int getOverrideHeight() {
+		return overrideHeight;
+	}
+
+	public int getOverrideWidth() {
+		return overrideWidth;
+	}
+
+	public Transformation getTransformation() {
+		return transformation;
 	}
 }

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.joy.glide.library.cache.key.DrawableKey;
 import com.joy.glide.library.cache.key.EmptySignature;
 import com.joy.glide.library.data.DataRepository;
@@ -12,6 +13,9 @@ import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.data.source.local.LocalDataSourceInstance;
 import com.joy.glide.library.data.source.remote.RemoteDataSource;
+import com.joy.glide.library.load.MultiTransformation;
+import com.joy.glide.library.load.Transformation;
+import com.joy.glide.library.load.resource.UnitTransformation;
 import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.GenericRequest;
 import com.joy.glide.library.request.RequestOrder;
@@ -21,6 +25,7 @@ import com.joy.glide.library.request.target.ViewTarget;
 import com.joy.glide.library.resource.DrawableTransformer;
 import com.joy.glide.library.resource.ResourceTransformer;
 import com.joy.glide.library.utils.CheckUtils;
+import com.joy.glide.library.utils.GLog;
 import com.joy.glide.library.utils.Util;
 
 import java.io.ByteArrayInputStream;
@@ -44,14 +49,18 @@ public class GenericRequestBuilder<ModelType> {
 	private Context context;
 	private ViewTarget viewTarget;
 	private ResourceTransformer resourceTransformer;
-
 	private DataRepository dataRepository;
-
+	private int overrideHeight = -1;
+	private int overrideWidth = -1;
+	private boolean isTransformationSet;
+	private Transformation transformation = UnitTransformation.get();
+	protected final Glide glide ;
 
 	public GenericRequestBuilder(Context context, Class<ModelType> modelClass, ModelType url) {
 		this.context = context;
 		this.modelClass = modelClass;
 		buildRequestTaskOrder(url);
+		glide = Glide.get(context);
 
 	}
 
@@ -88,6 +97,27 @@ public class GenericRequestBuilder<ModelType> {
 		this.into(new PreloadViewTarget(new View(context)));
 	}
 
+	public GenericRequestBuilder<ModelType> override(int width, int height) {
+		if (!Util.isValidDimensions(width, height)) {
+			throw new IllegalArgumentException("Width and height must be Target#SIZE_ORIGINAL or > 0");
+		}
+		this.overrideWidth = width;
+		this.overrideHeight = height;
+		return this;
+	}
+
+	public GenericRequestBuilder<ModelType> transform(Transformation... transformations) {
+		isTransformationSet = true;
+		if (transformations.length == 1) {
+			transformation = transformations[0];
+		} else {
+			transformation = new MultiTransformation(transformations);
+		}
+
+		return this;
+	}
+
+
 	public <Y extends ViewTarget> void into(Y target) {
 		CheckUtils.checkNotNull(target, "target must not be null!");
 		Util.assertMainThread();
@@ -111,7 +141,7 @@ public class GenericRequestBuilder<ModelType> {
 		localDataSource.setMemoryCacheStrategy(memoryCacheStrategy);
 		DataSource remoteDataSource = new RemoteDataSource(requestTaskOrder);
 		GenericRequest<ModelType> genericRequest = GenericRequest.obtain(requestTaskOrder, loadDataListener, placeholderId, errorId, model,
-				modelClass, memoryCacheStrategy, diskCacheStrategy, context, viewTarget, resourceTransformer);
+				modelClass, memoryCacheStrategy, diskCacheStrategy, context, viewTarget, resourceTransformer, overrideWidth, overrideHeight,transformation);
 		return new DataRepository<Bitmap>(localDataSource, remoteDataSource, genericRequest);
 
 	}

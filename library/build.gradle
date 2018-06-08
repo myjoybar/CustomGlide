@@ -35,5 +35,6 @@ dependencies {
     compile group: 'com.mcxiaoke.volley', name: 'library', version: '1.0.19'
     compile 'com.joybar.smoothhttp:library:1.1.2'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.12'
+    compile 'jp.wasabeef:glide-transformations:2.0.2'
 }
 
