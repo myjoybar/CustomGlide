@@ -3,32 +3,19 @@ package com.joy.glide;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.joy.glide.library.Glide;
 import com.joy.glide.library.data.DataSource;
 import com.joy.glide.library.data.source.local.LocalDataSource;
 import com.joy.glide.library.load.resource.bitmap.CircleCrop;
 import com.joy.glide.library.request.RequestOrder;
+import com.joy.glide.library.request.target.SimpleDrawableViewTarget;
 import com.joy.glide.library.utils.GLog;
-import com.joy.glide.recyclerview.MainActivityRecyclerview;
-
-import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,30 +28,31 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-		//testString();
-		//testJson();
 		setClickListener();
 
 	}
 
 	private void setClickListener() {
-		findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.btn_net).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				load();
-				//MainActivityB.launch(MainActivity.this);
+				loadImageFromServer();
 			}
 		});
 
-		findViewById(R.id.btn_enter).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.btn_sdcard).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MainActivityRecyclerview.launch(MainActivity.this);
+				loadImageFromSdcard();
 			}
 		});
 
-
-
+		findViewById(R.id.btn_into_viewgroup).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				loadImageFromSdcard();
+			}
+		});
 	}
 
 	private void initView() {
@@ -72,16 +60,74 @@ public class MainActivity extends AppCompatActivity {
 		lin = this.findViewById(R.id.lin);
 	}
 
-	private void test2() {
-		File file = new File(getExternalCacheDir() + "/image.jpg");
-		//Glide.with(this).load(file).into(imageView);
+	private void loadImageFromServer(){
+		String url = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea"
+				+ "&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg";
+		Glide.with(MainActivity.this)
+				.load(url)
+				.placeholder(R.drawable.placeholder)
+				.error(R.drawable.error)
+				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
+				.transform(new CircleCrop(MainActivity.this))
+				.listener(new DataSource.LoadDataListener() {
+					@Override
+					public void onLoadStarted() {
+						GLog.printInfo("onLoadStarted");
+					}
+
+					@Override
+					public void onDataLoaded(Object resource) {
+						GLog.printInfo("onResourceReady");
+					}
+
+					@Override
+					public void onDataLoadedError(@NonNull Throwable throwable) {
+						GLog.printInfo("onException, " + throwable.getMessage());
+					}
+
+					@Override
+					public void onProgressUpdate(int value) {
+						GLog.printInfo("onProgressUpdate, value" + value);
+					}
+
+					@Override
+					public void onCancelled() {
+						GLog.printInfo("onCancelled");
+					}
+				}).into(imv1);
+
+	}
+
+	private void loadImageFromSdcard(){
+		File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
+		File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
+		Glide.with(MainActivity.this)
+				.load(file)
+				.error(R.drawable.error)
+				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
+				.transform(new CircleCrop(MainActivity.this))
+				.into(imv1);
+
+	}
+
+	private void loadImageIntoViewGroup() {
+		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
+		Glide.with(MainActivity.this)
+				.load(url)
+				.error(R.drawable.error)
+				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
+				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
+				.transform(new CircleCrop(MainActivity.this))
+				.into(new SimpleDrawableViewTarget(lin));
 	}
 
 
 	private void load() {
 		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
-		String url2 = "\t\thttps://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
-				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg\n";
+		String url2 = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
+				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg";
 
 		String urlGif = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
 
@@ -96,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
 		Glide.with(this).load(url)
 				//.load(new MyUrl(url))
 				.placeholder(R.drawable.placeholder).error(R.drawable.error).memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.transform(new CircleCrop(this))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(false, false)).listener(new DataSource.LoadDataListener() {
+				.transform(new CircleCrop(this)).diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(false, false)).listener(new DataSource
+				.LoadDataListener() {
 			@Override
 			public void onLoadStarted() {
 				GLog.printInfo("onLoadStarted");
@@ -115,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressUpdate(int value) {
-			//	GLog.printInfo("onProgressUpdate, value" + value);
+				//	GLog.printInfo("onProgressUpdate, value" + value);
 			}
 
 
@@ -125,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		})
 				//		.preload();
-			.into(imv1);
+				.into(imv1);
 		//.asDrawable()
 		//		.into(new SimpleDrawableViewTarget(lin));
 
@@ -144,65 +190,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void testString() {
-		RequestQueue mQueue = Volley.newRequestQueue(this);
-		String url1 = "https://www.baidu.com";
-		String url2 = "http://www.weather.com.cn/data/cityinfo/101010100.html";
-		StringRequest stringRequest = new StringRequest(url1, new Response.Listener<String>() {
-			@Override
-			public void onResponse(String response) {
-				Log.d(TAG, response);
-			}
-		}, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.e(TAG, error.getMessage(), error);
-			}
-		});
 
-		StringRequest stringRequest1 = new StringRequest(Request.Method.POST, url1, new Response.Listener<String>() {
-			@Override
-			public void onResponse(String response) {
-				Log.d(TAG, response);
-			}
-		}, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.e(TAG, error.getMessage(), error);
-			}
-		}) {
-			@Override
-			protected Map<String, String> getParams() throws AuthFailureError {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("params1", "value1");
-				map.put("params2", "value2");
-				return map;
-			}
-		};
-
-		mQueue.add(stringRequest);
-	}
-
-	private void testJson() {
-		String url1 = "https://www.baidu.com";
-		String url2 = "http://www.weather.com.cn/data/cityinfo/101010100.html";
-		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url2, null, new Response.Listener<JSONObject>() {
-			@Override
-			public void onResponse(JSONObject response) {
-				Log.d(TAG, response.toString());
-			}
-		}, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.e(TAG, error.getMessage(), error);
-			}
-		});
-		RequestQueue mQueue = Volley.newRequestQueue(this);
-		mQueue.add(jsonObjectRequest);
-	}
-
-	private void test() {
-
-	}
 
 }

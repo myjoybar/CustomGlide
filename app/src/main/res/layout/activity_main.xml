@@ -13,19 +13,28 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn"
+            android:id="@+id/btn_net"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Click"
+            android:text="加载网络图片到Imageview"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <Button
-            android:id="@+id/btn_enter"
+            android:id="@+id/btn_sdcard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="enter custom" >
+            android:text="加载本地资源到Imageview"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_into_viewgroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载到ViewGroup">
         </Button>
 
 
