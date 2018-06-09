@@ -1,7 +1,6 @@
 package com.joy.glide.library.data;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -15,14 +14,11 @@ import com.joy.glide.library.load.resource.bitmap.ImageHeaderParser;
 import com.joy.glide.library.request.GenericRequest;
 import com.joy.glide.library.request.target.ViewTarget;
 import com.joy.glide.library.utils.GLog;
-import com.joy.smoothhttp.response.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
-import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by joybar on 2018/5/30.
@@ -67,7 +63,9 @@ public class DataRepository<R> implements DataSource<R> {
 	public void getDataAsync(@NonNull final DrawableKey key) {
 		final LoadDataListener loadDataListener = genericRequest.getRequestListener();
 		final ViewTarget viewTarget = genericRequest.getViewTarget();
-		loadDataListener.onLoadStarted();
+		if(null!= loadDataListener){
+			loadDataListener.onLoadStarted();
+		}
 		viewTarget.setPlaceHolder(genericRequest.getPlaceholderId());
 		localDataSource.getDataAsync(key, new LoadDataListenerAdapter<R>() {
 			@Override
@@ -75,33 +73,38 @@ public class DataRepository<R> implements DataSource<R> {
 				Bitmap bitmap = (Bitmap) resource;
 				bitmap = bitMapTransform(bitmap);
 				Drawable drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
-				attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, false);
+				attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, true);
 			}
 
 			@Override
 			public void onDataLoadedError(@NonNull Throwable throwable) {
 				GLog.printWarning("load form local data,onDataLoadedError");
-				remoteDataSource.getDataAsync(key, new LoadDataListenerAdapter<Response>() {
+				remoteDataSource.getDataAsync(key, new LoadDataListenerAdapter<R>() {
 					@Override
-					public void onDataLoaded(Response response) {
-						try {
-							Drawable drawable = null;
-							Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody()
-									.getBytes().length);
-							bitmap = bitMapTransform(bitmap);
-							if (isGif(response.getResponseBody().getBytes())) {
-								GLog.printInfo("this is gif ");
-								byte[] rawGifBytes = response.getResponseBody().getBytes();
-								drawable = new GifDrawable(rawGifBytes);
-							} else {
-								GLog.printInfo("this is not gif ");
-								drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
-							}
-							attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, true);
+					public void onDataLoaded(R response) {
+//						try {
+//							Drawable drawable = null;
+//							Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody()
+//									.getBytes().length);
+//							bitmap = bitMapTransform(bitmap);
+//							if (isGif(response.getResponseBody().getBytes())) {
+//								GLog.printInfo("this is gif ");
+//								byte[] rawGifBytes = response.getResponseBody().getBytes();
+//								drawable = new GifDrawable(rawGifBytes);
+//							} else {
+//								GLog.printInfo("this is not gif ");
+//								drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
+//							}
+//							attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, true);
+//
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
 
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						Bitmap bitmap = (Bitmap) response;
+						bitmap = bitMapTransform(bitmap);
+						Drawable drawable = new BitmapDrawable(genericRequest.getContext().getResources(), bitmap);
+						attachDataToTarget(key, drawable, bitmap, loadDataListener, viewTarget, true);
 					}
 
 					@Override
@@ -139,7 +142,6 @@ public class DataRepository<R> implements DataSource<R> {
 
 	private byte[] bitmapToByteArray(Bitmap bitmap) {
 		int bytes = bitmap.getByteCount();
-
 		ByteBuffer buf = ByteBuffer.allocate(bytes);
 		bitmap.copyPixelsToBuffer(buf);
 		byte[] byteArray = buf.array();

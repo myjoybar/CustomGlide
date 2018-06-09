@@ -4,7 +4,7 @@
 
 
 ## Features
- - 每次request的lifecycle，网络请求，异步回都是独立的模块
+ - 每次IMG Request的的lifecycle 管理，网络请求，异步回都是独立的模块
  - 支持网络，本地资源文件加载
  - 支持ImageView或者ViewGroup作为显示target
  - 支持网络下载图片进度回调
@@ -19,7 +19,7 @@
 ### Gradle Dependency
 #####   Add the library to your project build.gradle
 ```gradle
-
+compile 'com.joy.customglide:library:1.0.0'
 
 ```
 
@@ -35,13 +35,13 @@
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(url)
 		.placeholder(R.drawable.placeholder)
 		.error(R.drawable.error)
 		.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
 		.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
-		.into(imv1);
+		.into(imv);
 
 ```
 
@@ -49,7 +49,7 @@ Glide.with(MainActivity.this)
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(url)
 		.listener(new DataSource.LoadDataListener() {
 			@Override
@@ -76,17 +76,17 @@ Glide.with(MainActivity.this)
 			public void onCancelled() {
 				GLog.printInfo("onCancelled");
 			}
-		}).into(imv1);
+		}).into(imv);
 
 ```
 ### 3（指定bitmap转换器，CircleCrop 继承BitmapTransformation）
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(url)
-		.transform(new CircleCrop(MainActivity.this))
-		.into(imv1);
+		.transform(new CircleCrop(context))
+		.into(imv);
 
 ```
 
@@ -94,9 +94,9 @@ Glide.with(MainActivity.this)
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(file)
-		.into(imv1);
+		.into(imv);
 
 ```
 
@@ -104,9 +104,9 @@ Glide.with(MainActivity.this)
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(url)
-		.into(new SimpleDrawableViewTarget(lin));
+		.into(new SimpleDrawableViewTarget(viewGroupForImg));
 
 ```
 
@@ -114,25 +114,25 @@ Glide.with(MainActivity.this)
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(url)
 		.preload（）;
 
 ```
 
-### 5（自定义URl，继承RequestOrder<String>）
+### 7（自定义URl，继承RequestOrder<String>）
 
 
 ```java
-Glide.with(MainActivity.this)
+Glide.with(context)
 		.load(new MyUrl(url))
-		.preload（）;
+		.into(imv);
 
 ```
 
 ## License
 
-    Copyright 2017 MyJoybar
+    Copyright 2018 MyJoybar
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

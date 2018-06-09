@@ -1,9 +1,11 @@
 package com.joy.glide;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -17,179 +19,167 @@ import com.joy.glide.library.utils.GLog;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-	public static String TAG = "MainActivity";
-	ImageView imv1;
-	LinearLayout lin;
+    public static String TAG = "MainActivity";
+    private Context context;
+    private ImageView imv;
+    private Button btnNet;
+    private Button btnSdcard;
+    private Button btnIntoViewGroup;
+    private Button btnPreload;
+    private Button btnCustomUrl;
+    private LinearLayout viewGroupForImg;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        context = this;
+        initView();
+        setClickListener();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		initView();
-		setClickListener();
+    }
 
-	}
+    private void initView() {
+        imv = this.findViewById(R.id.imv);
+        btnNet = this.findViewById(R.id.btn_net);
+        btnSdcard = this.findViewById(R.id.btn_sdcard);
+        btnIntoViewGroup = this.findViewById(R.id.btn_into_viewgroup);
+        btnPreload = this.findViewById(R.id.btn_preload);
+        btnCustomUrl = this.findViewById(R.id.btn_custom_url);
+        viewGroupForImg = this.findViewById(R.id.lin_for_img);
+    }
 
-	private void setClickListener() {
-		findViewById(R.id.btn_net).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				loadImageFromServer();
-			}
-		});
+    @Override
+    public void onClick(View v) {
+        imv.setVisibility(View.VISIBLE);
+        switch (v.getId()) {
+            case R.id.btn_net:
+                loadImageFromServer();
+                break;
+            case R.id.btn_sdcard:
+                loadImageFromSdcard();
+                break;
+            case R.id.btn_into_viewgroup:
+                imv.setVisibility(View.GONE);
+                viewGroupForImg.setVisibility(View.VISIBLE);
+                loadImageIntoViewGroup();
+                break;
+            case R.id.btn_preload:
+                preload();
+                break;
+            case R.id.btn_custom_url:
+                LoadCustomUrl();
+                break;
+            default:
+                break;
 
-		findViewById(R.id.btn_sdcard).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				loadImageFromSdcard();
-			}
-		});
-
-		findViewById(R.id.btn_into_viewgroup).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				loadImageFromSdcard();
-			}
-		});
-	}
-
-	private void initView() {
-		imv1 = this.findViewById(R.id.imv1);
-		lin = this.findViewById(R.id.lin);
-	}
-
-	private void loadImageFromServer(){
-		String url = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea"
-				+ "&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg";
-		Glide.with(MainActivity.this)
-				.load(url)
-				.placeholder(R.drawable.placeholder)
-				.error(R.drawable.error)
-				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
-				.transform(new CircleCrop(MainActivity.this))
-				.listener(new DataSource.LoadDataListener() {
-					@Override
-					public void onLoadStarted() {
-						GLog.printInfo("onLoadStarted");
-					}
-
-					@Override
-					public void onDataLoaded(Object resource) {
-						GLog.printInfo("onResourceReady");
-					}
-
-					@Override
-					public void onDataLoadedError(@NonNull Throwable throwable) {
-						GLog.printInfo("onException, " + throwable.getMessage());
-					}
-
-					@Override
-					public void onProgressUpdate(int value) {
-						GLog.printInfo("onProgressUpdate, value" + value);
-					}
-
-					@Override
-					public void onCancelled() {
-						GLog.printInfo("onCancelled");
-					}
-				}).into(imv1);
-
-	}
-
-	private void loadImageFromSdcard(){
-		File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
-		File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
-		Glide.with(MainActivity.this)
-				.load(file)
-				.error(R.drawable.error)
-				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
-				.transform(new CircleCrop(MainActivity.this))
-				.into(imv1);
-
-	}
-
-	private void loadImageIntoViewGroup() {
-		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
-		Glide.with(MainActivity.this)
-				.load(url)
-				.error(R.drawable.error)
-				.memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true,true))
-				.transform(new CircleCrop(MainActivity.this))
-				.into(new SimpleDrawableViewTarget(lin));
-	}
+        }
+    }
 
 
-	private void load() {
-		String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
-		String url2 = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527160616639&di=383b0369f49ac965de63a578779c3fea" +
-				"&imgtype=0&src=http%3A%2F%2Fimg1.gamersky.com%2Fimage2013%2F02%2F20130214y_5%2Fimage291_wm.jpg";
+    private void setClickListener() {
+        btnSdcard.setOnClickListener(this);
+        btnIntoViewGroup.setOnClickListener(this);
+        btnPreload.setOnClickListener(this);
+        btnCustomUrl.setOnClickListener(this);
+        btnNet.setOnClickListener(this);
 
-		String urlGif = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3777450208,2776164194&fm=27&gp=0.jpg";
-
-		File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
-		File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
-
-		//GLog.printInfo("file="+file.getName());
-		GLog.printInfo("file=" + file2.getAbsolutePath());
-		String urlBig = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif?raw=true";
-
-		String urlbig2 = "https://github.com/myjoybar/Android-RecyclerView/blob/master/Android-RecyclerView/Image/demo.gif";
-		Glide.with(this).load(url)
-				//.load(new MyUrl(url))
-				.placeholder(R.drawable.placeholder).error(R.drawable.error).memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy(true, 60))
-				.transform(new CircleCrop(this)).diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(false, false)).listener(new DataSource
-				.LoadDataListener() {
-			@Override
-			public void onLoadStarted() {
-				GLog.printInfo("onLoadStarted");
-			}
-
-			@Override
-			public void onDataLoaded(Object resource) {
-				GLog.printInfo("onResourceReady");
-			}
-
-			@Override
-			public void onDataLoadedError(@NonNull Throwable throwable) {
-				GLog.printInfo("onException, " + throwable.getMessage());
-			}
-
-			@Override
-			public void onProgressUpdate(int value) {
-				//	GLog.printInfo("onProgressUpdate, value" + value);
-			}
+    }
 
 
-			@Override
-			public void onCancelled() {
-				GLog.printInfo("onCancelled");
-			}
-		})
-				//		.preload();
-				.into(imv1);
-		//.asDrawable()
-		//		.into(new SimpleDrawableViewTarget(lin));
+    private void loadImageFromServer() {
+        String url = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1528541262255&di=4a4ab2d5bd7419e7aa9fd8f8e71a3f3b&imgtype=0&src=http%3A%2F%2Ff.hiphotos.baidu.com%2Fzhidao%2Fpic%2Fitem%2Fd31b0ef41bd5ad6e181f5a0587cb39dbb7fd3c7e.jpg";
+        String urlGif = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=37774502082776164194&fm=27&gp=0.jpg";
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.error)
+                .memoryCacheStrategy(new LocalDataSource.MemoryCacheStrategy (true, 60))
+                .diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
+                .transform(new CircleCrop(MainActivity.this)).listener(new DataSource
+                .LoadDataListener() {
+            @Override
+            public void onLoadStarted() {
+                GLog.printInfo("onLoadStarted");
+            }
 
-	}
+            @Override
+            public void onDataLoaded(Object resource) {
+                GLog.printInfo("onResourceReady");
+            }
 
-	public class MyUrl extends RequestOrder<String> {
+            @Override
+            public void onDataLoadedError(@NonNull Throwable throwable) {
+                GLog.printInfo("onException, " + throwable.getMessage());
+            }
 
+            @Override
+            public void onProgressUpdate(int value) {
+                GLog.printInfo("onProgressUpdate, value" + value);
+            }
 
-		public MyUrl(String url) {
-			super(url);
-		}
+            @Override
+            public void onCancelled() {
+                GLog.printInfo("onCancelled");
+            }
+        }).into(imv);
 
-		@Override
-		public String getUrl() {
-			return "aaaa";
-		}
-	}
+    }
 
+    private void loadImageFromSdcard() {
+        File file = new File("/storage/emulated/0/Pictures/1525965726567.jpg");
+        File file2 = new File("/storage/emulated/0/DCIM/Camera/IMG_20160603_211526.jpg");
+        Glide.with(context)
+                .load(file)
+                .error(R.drawable.error)
+                .memoryCacheStrategy(new  LocalDataSource.MemoryCacheStrategy(true, 60))
+                .diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
+                .transform(new CircleCrop(context))
+                .into(imv);
+    }
+
+    private void loadImageIntoViewGroup() {
+        String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
+        Glide.with(context)
+                .load(url).error(R.drawable.error)
+                .memoryCacheStrategy(new  LocalDataSource.MemoryCacheStrategy(true, 60))
+                .diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
+                .transform(new CircleCrop(context))
+                .into(new SimpleDrawableViewTarget(viewGroupForImg));
+    }
+
+    private void preload() {
+        String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
+        Glide.with(context)
+                .load(url)
+                .error(R.drawable.error)
+                .memoryCacheStrategy(new  LocalDataSource.MemoryCacheStrategy(true, 60))
+                .diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
+                .preload();
+    }
+
+    private void LoadCustomUrl() {
+        String url = "http://img.taopic.com/uploads/allimg/120727/201995-120HG1030762.jpg";
+        Glide.with(context)
+                .load(new MyUrl(url))
+                .error(R.drawable.error)
+                .memoryCacheStrategy(new  LocalDataSource.MemoryCacheStrategy(true, 60))
+                .diskCacheStrategy(new LocalDataSource.DiskCacheStrategy(true, true))
+                .preload();
+    }
+
+    public class MyUrl extends RequestOrder<String> {
+
+        public MyUrl(String url) {
+            super(url);
+        }
+
+        @Override
+        public String getUrl() {
+            return "this is new url";
+        }
+    }
 
 
 }

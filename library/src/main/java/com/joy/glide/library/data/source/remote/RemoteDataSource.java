@@ -13,6 +13,7 @@ import com.joy.glide.library.request.target.Target;
 import com.joy.glide.library.utils.GLog;
 import com.joy.smoothhttp.call.ICall;
 import com.joy.smoothhttp.response.Response;
+import com.joy.smoothhttp.response.body.ResponseBody;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,9 +73,8 @@ public class RemoteDataSource<R> implements DataSource<R> {
                 @Override
                 public void onResponse(RequestOrder requestOrder, Response response) {
                     GLog.printInfo("onResponse");
-                 //   Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody().getBytes() .length);
-                  //  loadDataCallback.onDataLoaded(bitmap);
-                    loadDataCallback.onDataLoaded(response);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(response.getResponseBody().getBytes(), 0, response.getResponseBody().getBytes() .length);
+                    loadDataCallback.onDataLoaded(bitmap);
                 }
 
                 @Override

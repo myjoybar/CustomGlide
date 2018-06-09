@@ -34,12 +34,24 @@
             android:id="@+id/btn_into_viewgroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="加载到ViewGroup">
+            android:text="加载到ViewGroup"/>
+
+        <Button
+            android:id="@+id/btn_preload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="图片预加载"/>
+
+        <Button
+            android:id="@+id/btn_custom_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自定义URL">
         </Button>
 
 
         <ImageView
-            android:id="@+id/imv1"
+            android:id="@+id/imv"
             android:layout_width="400dp"
             android:layout_height="400dp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -47,11 +59,10 @@
             app:layout_constraintTop_toBottomOf="@+id/btn"/>
 
         <LinearLayout
-            android:id="@+id/lin"
+            android:id="@+id/lin_for_img"
             android:layout_width="400dp"
             android:layout_height="400dp"
             android:orientation="horizontal">
-
         </LinearLayout>
     </LinearLayout>
 

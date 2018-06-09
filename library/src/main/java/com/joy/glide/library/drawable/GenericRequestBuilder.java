@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.joy.glide.library.Glide;
 import com.joy.glide.library.cache.key.DrawableKey;
 import com.joy.glide.library.cache.key.EmptySignature;
 import com.joy.glide.library.data.DataRepository;
@@ -25,7 +25,6 @@ import com.joy.glide.library.request.target.ViewTarget;
 import com.joy.glide.library.resource.DrawableTransformer;
 import com.joy.glide.library.resource.ResourceTransformer;
 import com.joy.glide.library.utils.CheckUtils;
-import com.joy.glide.library.utils.GLog;
 import com.joy.glide.library.utils.Util;
 
 import java.io.ByteArrayInputStream;
